@@ -1,0 +1,28 @@
+import { UserEvent } from "../subscribers/user.js";
+import { DefaultHelper } from "../utils/helpers.js";
+
+export const UserController = {
+  update_pass: async (req, res) => {
+    const { user, token } = req?.body;
+
+    if (!user || !token) {
+      DefaultHelper.return_error(res, 400, "Unable to update user token");
+      return;
+    }
+
+    //if token stored in request body, return data
+    let data = { user: DefaultHelper.hide_user_credentials(user), token };
+
+    //emit event
+    UserEvent.emit("change-password", { data });
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "Account password updated successfully",
+      data
+    );
+    return;
+  },
+};

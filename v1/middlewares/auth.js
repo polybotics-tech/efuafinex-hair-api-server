@@ -1,0 +1,194 @@
+import bcrypt from "bcryptjs";
+import { UserModel } from "../models/user.js";
+import { DefaultHelper } from "../utils/helpers.js";
+import { FormValidator } from "./validator.js";
+import { Tokenizer } from "../hooks/tokenizer.js";
+import { config } from "../../config.js";
+
+export const AuthMiddleWare = {
+  validate_login_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.login(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
+  validate_register_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.register(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
+  check_email_is_new: async (req, res, next) => {
+    let { email } = req?.body;
+
+    //check if email exist for user
+    const userFound = await UserModel.fetch_user_by_email(email);
+
+    if (userFound) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "An account exists with this email. Try to login",
+        { email }
+      );
+      return;
+    }
+
+    //email doesnt exist on record
+    next();
+  },
+  find_user_by_email: async (req, res, next) => {
+    let { email } = req?.body;
+
+    //check if email exist for user
+    const userFound = await UserModel.fetch_user_by_email(email);
+
+    if (!userFound) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Access denied. Invalid credentials",
+        { email }
+      );
+      return;
+    }
+
+    req.body.user = userFound;
+    next();
+  },
+  hash_new_pass: async (req, res, next) => {
+    const { pass } = req?.body;
+    //hash password
+    const hashed = bcrypt.hashSync(pass, Number(config.bcryptHashSalt));
+    if (hashed) {
+      req.body.pass = String(hashed);
+      next();
+    } else {
+      DefaultHelper.return_error(res, 400, "Unable to process request");
+      return;
+    }
+  },
+  compare_pass_match: async (req, res, next) => {
+    const { user, pass } = req?.body;
+
+    //compare password
+    const match = await bcrypt.compare(pass, user?.pass);
+    if (!match) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Access denied. Invalid credentials"
+      );
+      return;
+    }
+
+    next();
+  },
+  create_and_store_user: async (req, res, next) => {
+    //create new user
+    const new_user = await UserModel.create_user(req?.body);
+
+    if (!new_user) {
+      DefaultHelper.return_error(res, 500, "Internal server error has occured");
+      return;
+    }
+
+    console.log("nu: ", new_user);
+
+    //if user created fetch user record
+    const user = await UserModel.fetch_user_by_id(new_user);
+
+    console.log("u: ", user);
+
+    if (!user) {
+      DefaultHelper.return_error(res, 500, "Internal server error has occured");
+      return;
+    }
+
+    req.body.user = user;
+    next();
+  },
+  generate_and_update_token: async (req, res, next) => {
+    const { user } = req?.body;
+    const { user_id } = user;
+
+    if (!user_id) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Access denied. Invalid authentication credentials"
+      );
+      return;
+    }
+
+    //generate new token
+    const new_token = Tokenizer.generate_token(user_id);
+
+    if (!new_token) {
+      DefaultHelper.return_error(res, 500, "Internal server error has occured");
+      return;
+    }
+
+    //update token in user records on db
+    const token_updated = UserModel.update_user_token(new_token, user_id);
+
+    if (!token_updated) {
+      DefaultHelper.return_error(res, 400, "Unable to update user token");
+      return;
+    }
+
+    req.body.token = new_token;
+
+    next();
+  },
+  validate_token_authorization: async (req, res, next) => {
+    let message = "Access denied. Authorization validation failed";
+
+    try {
+      if (!req.headers || !req.headers.authorization) {
+        DefaultHelper.return_error(res, 403, message);
+        return;
+      }
+
+      //check if header is recognized
+      const tokenKey = req.headers?.authorization.split(" ")[0];
+      const token = req.headers?.authorization.split(" ")[1];
+
+      if (tokenKey !== config.tokenAuthorizationKey || !token) {
+        DefaultHelper.return_error(res, 403, message);
+        return;
+      }
+
+      //get the user_id from the decoded token
+      const decoded_token = Tokenizer.decode_token(token);
+      if (!decoded_token || !decoded_token?.user_id) {
+        DefaultHelper.return_error(res, 401, message);
+        return;
+      }
+
+      //attach user_id to request body
+      req.body.user_id = decoded_token?.user_id;
+
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(res, 401, message);
+      return;
+    }
+  },
+};
