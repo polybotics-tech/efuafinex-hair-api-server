@@ -19,7 +19,7 @@ export const config = {
     idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
     queueLimit: 0,
     enableKeepAlive: true,
-    //timezone: "Z",
+    timezone: "Z",
   },
   logger: {
     timeZone: "Africa/Lagos",

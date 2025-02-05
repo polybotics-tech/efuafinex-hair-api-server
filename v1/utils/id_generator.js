@@ -77,4 +77,7 @@ export const IdGenerator = {
     `${first_name}-${random_num(10, 999)}${random_aph(
       random_num(2, 4)
     )}${random_num(10, 999)}`,
+  package_id: `PID-${random_num(10, 99)}${random_aph(
+    random_num(2, 4)
+  )}${parseInt(Number(dt.getTime()) / 1000)}`,
 };

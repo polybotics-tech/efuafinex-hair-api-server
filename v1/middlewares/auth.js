@@ -159,6 +159,7 @@ export const AuthMiddleWare = {
   },
   validate_token_authorization: async (req, res, next) => {
     let message = "Access denied. Authorization validation failed";
+    let umessage = "Access denied. User not found";
 
     try {
       if (!req.headers || !req.headers.authorization) {
@@ -182,13 +183,40 @@ export const AuthMiddleWare = {
         return;
       }
 
-      //attach user_id to request body
-      req.body.user_id = decoded_token?.user_id;
+      //take note of decoded user_id
+      const decoded_user_id = decoded_token?.user_id;
+
+      //fetch user by token
+      const token_user = await UserModel.fetch_user_by_auth_token(token);
+
+      if (!token_user) {
+        DefaultHelper.return_error(res, 404, umessage);
+        return;
+      }
+
+      //compare user ids
+      if (decoded_user_id != token_user?.user_id) {
+        DefaultHelper.return_error(res, 401, message);
+        return;
+      }
+
+      //attach user_id and user to request body
+      req.body.user_id = decoded_user_id;
+      req.body.user = token_user;
 
       next();
     } catch (error) {
       DefaultHelper.return_error(res, 401, message);
       return;
     }
+  },
+  integrate_pagination_query: async (req, res, next) => {
+    //obtain page from query or assign page 1
+    const page =
+      req.query?.page && req.query?.page > 0 ? parseInt(req?.query?.page) : 1;
+
+    //append current page to body request
+    req.body.page = page;
+    next();
   },
 };

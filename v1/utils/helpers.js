@@ -1,3 +1,4 @@
+import { config } from "../../config.js";
 import { logbot } from "../../logger.js";
 
 export const DefaultHelper = {
@@ -50,8 +51,8 @@ export const DefaultHelper = {
     }
   },
 
-  check_has_prev_next_page: (page, totalRes, isNext) => {
-    const approxPages = Math.round(totalRes / config.pageLimit);
+  check_has_prev_next_page: (page = 1, totalRes, isNext) => {
+    const approxPages = Math.round(totalRes / config?.pageLimit);
 
     if (isNext) {
       return page < approxPages ? true : false;
