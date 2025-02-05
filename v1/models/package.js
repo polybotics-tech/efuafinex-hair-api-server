@@ -6,7 +6,7 @@ import { DefaultHelper } from "../utils/helpers.js";
 
 export const PackageModel = {
   create_package: async (form) => {
-    const sql = `INSERT INTO ${db_tables.packages} (created_time, package_id, user_id, title, description, package_type, target_amount, available_amount, auto_complete, fixed_deadline, deadline, duration, has_photo, photo, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO ${db_tables.packages} (created_time, package_id, user_id, title, description, package_type, target_amount, available_amount, auto_complete, fixed_deadline, deadline, has_photo, photo, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     const params = ParamsGenerator.package.create_new_package(form);
 
     //attempt save to db
@@ -16,6 +16,26 @@ export const PackageModel = {
     }
 
     return saved;
+  },
+  fetch_package_by_id: async (id) => {
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE id = ? LIMIT 1`;
+    const params = [id];
+
+    const rows = await DB.read(sql, params);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    return data.length > 0 ? data[0] : false;
+  },
+  fetch_package_by_package_id: async (package_id) => {
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE package_id = ? LIMIT 1`;
+    const params = [package_id];
+
+    const rows = await DB.read(sql, params);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    return data.length > 0 ? data[0] : false;
   },
   fetch_user_packages: async (user_id, page = 1) => {
     const offset = DefaultHelper.get_offset(page);

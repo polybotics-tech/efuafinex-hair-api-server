@@ -72,7 +72,9 @@ const random_aph = (count) => {
 const dt = new Date();
 
 export const IdGenerator = {
-  user_id: `UID-${random_num(10, 99)}${random_aph(3)}${dt.getTime()}`,
+  user_id: `UID-${random_num(10, 99)}${random_aph(3)}${parseInt(
+    Number(dt.getTime()) / 1000
+  )}`,
   user_name: (first_name) =>
     `${first_name}-${random_num(10, 999)}${random_aph(
       random_num(2, 4)

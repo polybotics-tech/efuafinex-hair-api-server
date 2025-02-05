@@ -77,10 +77,17 @@ export const ParamsGenerator = {
       title = String(title);
       description = String(description);
       let package_type = is_defined ? "defined" : "free";
-      target_amount = Number(target_amount || 0);
+      target_amount = is_defined ? Number(target_amount || 0) : 0;
       let available_amount = Number(0);
-      deadline = FormatDateTime.to_database_entry(deadline);
-      duration = Number(duration?.split("months")[0]);
+      auto_complete = Boolean(auto_complete === "true");
+      fixed_deadline = Boolean(fixed_deadline === "true");
+      duration = !duration ? 0 : Number(duration?.split("months")[0]);
+      deadline = fixed_deadline
+        ? FormatDateTime.to_database_entry(deadline)
+        : FormatDateTime.to_database_entry(
+            FormatDateTime.to_future_deadline_from_duration(duration)
+          );
+      has_photo = Boolean(has_photo === "true");
       let photo = ""; //recheck this later
       let status = "in-progress";
 
@@ -96,7 +103,6 @@ export const ParamsGenerator = {
         auto_complete,
         fixed_deadline,
         deadline,
-        duration,
         has_photo,
         photo,
         status,

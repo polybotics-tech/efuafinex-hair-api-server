@@ -5,7 +5,7 @@ import { logbot } from "../../logger.js";
 export const PackageEvent = new EventEmitter();
 
 //--package event listeners
-PackageEvent.on("create-package", async (args) => {
+PackageEvent.on("package-created", async (args) => {
   console.log("event create package: ", args);
   // do stuff
 });

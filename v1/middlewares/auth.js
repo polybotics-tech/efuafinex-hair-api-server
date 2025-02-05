@@ -109,12 +109,8 @@ export const AuthMiddleWare = {
       return;
     }
 
-    console.log("nu: ", new_user);
-
     //if user created fetch user record
     const user = await UserModel.fetch_user_by_id(new_user);
-
-    console.log("u: ", user);
 
     if (!user) {
       DefaultHelper.return_error(res, 500, "Internal server error has occured");
