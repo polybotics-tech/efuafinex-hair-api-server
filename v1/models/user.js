@@ -72,6 +72,18 @@ export const UserModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
+  update_user_notify: async (push_notify, email_notify, user_id) => {
+    const sql = `UPDATE ${db_tables.users} SET last_updated=?, last_seen=?, push_notify=?, email_notify=? WHERE user_id=? LIMIT 1`;
+    const params = ParamsGenerator.user.update_notify(
+      push_notify,
+      email_notify,
+      user_id
+    );
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
   update_user_last_seen: async (user_id) => {
     const sql = `UPDATE ${db_tables.users} SET last_seen=? WHERE user_id=? LIMIT 1`;
     const params = ParamsGenerator.user.update_last_seen(user_id);

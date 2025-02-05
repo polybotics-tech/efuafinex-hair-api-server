@@ -24,8 +24,8 @@ export const ParamsGenerator = {
       let user_name = IdGenerator.user_name(fullname?.split(" ")[0]);
       let auth_token = "";
       let thumbnail = "";
-      let push_notify = true;
-      let email_notify = true;
+      let push_notify = Boolean(true);
+      let email_notify = Boolean(true);
 
       return [
         created_time,
@@ -49,6 +49,14 @@ export const ParamsGenerator = {
       pass = `${pass}`;
 
       return [last_updated, last_seen, pass, user_id];
+    },
+    update_notify: (push_notify, email_notify, user_id) => {
+      let last_updated = FormatDateTime.to_database_entry();
+      let last_seen = FormatDateTime.to_database_entry();
+      push_notify = Boolean(push_notify);
+      email_notify = Boolean(email_notify);
+
+      return [last_updated, last_seen, push_notify, email_notify, user_id];
     },
     update_last_seen: (user_id) => {
       let last_seen = FormatDateTime.to_database_entry();

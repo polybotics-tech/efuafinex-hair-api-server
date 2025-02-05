@@ -19,6 +19,20 @@ export const UserMiddleware = {
 
     next();
   },
+  validate_update_notify_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.update_notify(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
   hash_new_pass: async (req, res, next) => {
     const { new_pass } = req?.body;
     //hash password
@@ -58,6 +72,31 @@ export const UserMiddleware = {
     }
 
     //done updating password
+    next();
+  },
+  store_user_notify_preference: async (req, res, next) => {
+    const { push_notify, email_notify, user_id } = req?.body;
+
+    //store notify preference in db
+    const update_notify = await UserModel.update_user_notify(
+      push_notify,
+      email_notify,
+      user_id
+    );
+
+    if (!update_notify) {
+      DefaultHelper.return_error(
+        res,
+        400,
+        "Unable to update notification preference"
+      );
+      return;
+    }
+
+    //fetch new user
+    const user = await UserModel.fetch_user_by_user_id(user_id);
+
+    req.body.user = user;
     next();
   },
 };

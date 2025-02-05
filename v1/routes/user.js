@@ -20,3 +20,12 @@ userRouter.put(
   AuthMiddleWare.generate_and_update_token,
   UserController.update_pass
 );
+
+//update user notification prefences
+userRouter.put(
+  "/notify",
+  UserMiddleware.validate_update_notify_form,
+  AuthMiddleWare.validate_token_authorization,
+  UserMiddleware.store_user_notify_preference,
+  UserController.update_notify
+);

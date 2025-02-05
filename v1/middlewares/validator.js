@@ -8,5 +8,6 @@ export const FormValidator = {
   login: validator(AuthSchema.login),
   register: validator(AuthSchema.register),
   update_pass: validator(UserSchema.update_pass),
+  update_notify: validator(UserSchema.update_notify),
   create_package: validator(PackageSchema.create_package),
 };

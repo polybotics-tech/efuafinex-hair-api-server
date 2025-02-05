@@ -26,4 +26,12 @@ export const UserSchema = {
       "any.only": "Confirm password must match new password",
     }),
   }),
+  update_notify: Joi.object({
+    push_notify: Joi.boolean().required().messages({
+      "any.required": "Boolean value required for 'push_notify'",
+    }),
+    email_notify: Joi.boolean().required().messages({
+      "any.required": "Boolean value required for 'email_notify'",
+    }),
+  }),
 };
