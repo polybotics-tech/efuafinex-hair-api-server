@@ -108,10 +108,8 @@ export const DepositMiddleware = {
     }
   },
   validate_transaction_reference_query: async (req, res, next) => {
-    console.log("success page");
     //grab the package id
     const { reference } = req?.query;
-    console.log("ref: ", reference);
 
     //fetch deposit record
     const deposit_record = await DepositModel.fetch_deposit_by_transaction_ref(
@@ -119,7 +117,7 @@ export const DepositMiddleware = {
     );
 
     if (!deposit_record) {
-      DefaultHelper.return_error(res, 200, "Deposit record not found h");
+      DefaultHelper.return_error(res, 200, "Deposit record not found");
       return;
     }
 

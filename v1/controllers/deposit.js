@@ -27,6 +27,9 @@ export const DepositController = {
       fee_charged,
     };
 
+    //call event to update any pending deposit on records
+    DepositEvent.emit("update-pending-deposits");
+
     //
     DefaultHelper.return_success(
       res,
@@ -67,6 +70,9 @@ export const DepositController = {
     //call deposit-made event
     let data = { reference, deposit_record };
     DepositEvent.emit("deposit-made", { data });
+
+    //call event to update any pending deposit on records
+    DepositEvent.emit("update-pending-deposits");
   },
   fetch_single_record: async (req, res) => {
     const { deposit_record } = req?.body;
@@ -78,6 +84,9 @@ export const DepositController = {
 
     //if deposit_record stored in request body, return data
     let data = deposit_record;
+
+    //call event to update any pending deposit on records
+    DepositEvent.emit("update-pending-deposits");
 
     //
     DefaultHelper.return_success(

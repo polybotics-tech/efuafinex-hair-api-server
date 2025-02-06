@@ -164,7 +164,10 @@ export const ParamsGenerator = {
     },
     update_status: (status, transaction_ref) => {
       let last_updated = FormatDateTime.to_database_entry();
-      status = status === "success" || "pending" ? String(status) : "failed";
+      status =
+        status === "success" || status === "pending"
+          ? String(status)
+          : "failed";
 
       return [last_updated, status, transaction_ref];
     },

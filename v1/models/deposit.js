@@ -74,4 +74,14 @@ export const DepositModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
+  fetch_event_pending_deposits: async () => {
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE status = ? LIMIT 5`;
+    const params = ["pending"];
+
+    const rows = await DB.read(sql, params);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    return data;
+  },
 };

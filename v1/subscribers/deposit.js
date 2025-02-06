@@ -7,7 +7,33 @@ import { PackageEvent } from "./package.js";
 
 export const DepositEvent = new EventEmitter();
 
-//--package event listeners
+//--deposit event listeners
+DepositEvent.on("update-status", async (args) => {
+  // extract transaction reference
+  const { data } = args;
+  const { reference, deposit_record } = data;
+  const { fee_charged } = deposit_record;
+
+  //send request to paystack to verify transaction
+  const verify_response = await API_REQUESTS.Paystack.verify_transaction(
+    reference
+  );
+
+  if (verify_response) {
+    //extract needed data
+    const { status, amount, channel, authorization } = verify_response;
+    const paid_amount = parseInt(Number(amount / 100) - Number(fee_charged));
+
+    if (deposit_record?.status != status) {
+      //update deposit status on db
+      await DepositModel.update_deposit_record_status(status, reference);
+    }
+  } else {
+    //update deposit status on db
+    await DepositModel.update_deposit_record_status("failed", reference);
+  }
+});
+
 DepositEvent.on("deposit-made", async (args) => {
   // extract transaction reference
   const { data } = args;
@@ -65,5 +91,22 @@ DepositEvent.on("deposit-made", async (args) => {
         }
       }
     }
+  }
+});
+
+DepositEvent.on("update-pending-deposits", async () => {
+  //fetch latest 5 pending deposits
+  const pending_deposits = await DepositModel.fetch_event_pending_deposits();
+
+  if (pending_deposits?.length > 0) {
+    //verify and update status from paystack by calling the deposit-made event
+    pending_deposits?.forEach((deposit_record) => {
+      let data = {
+        reference: deposit_record?.transaction_ref,
+        deposit_record,
+      };
+
+      DepositEvent.emit("update-status", { data });
+    });
   }
 });
