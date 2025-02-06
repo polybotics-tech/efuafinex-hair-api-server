@@ -57,6 +57,10 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 
 `/package/` - GET - _query{?page, ?sort}_ - **(token required)**
 
+#### Mark Package As Completed
+
+`/package/completed/:package_id` - PUT - **(token required)**
+
 ### /deposit/ Enpoints
 
 #### Fund A Package

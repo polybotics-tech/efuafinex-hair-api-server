@@ -1,3 +1,4 @@
+import { PackageModel } from "../models/package.js";
 import { PackageEvent } from "../subscribers/package.js";
 import { DefaultHelper } from "../utils/helpers.js";
 
@@ -68,6 +69,29 @@ export const PackageController = {
       200,
       "Packages fetched successfully",
       data
+    );
+    return;
+  },
+  mark_package_completed: async (req, res) => {
+    //extract package
+    const { target_package } = req?.body;
+    const { package_id } = target_package;
+
+    //update package status
+    const update_status = await PackageModel.update_package_status(
+      "completed",
+      package_id
+    );
+
+    if (!update_status) {
+      DefaultHelper.return_error(res, 400, "Unable to update package status");
+      return;
+    }
+
+    DefaultHelper.return_success(
+      res,
+      200,
+      "Packaged successfully marked completed"
     );
     return;
   },

@@ -44,16 +44,34 @@ PackageEvent.on("fund-added-to-package", async (args) => {
   );
 
   if (target_package) {
-    const { available_amount } = target_package;
+    const { available_amount, target_amount, auto_complete } = target_package;
 
     //do the maths
-    let new_amount = Number(available_amount + amount);
+    const new_amount = Number(available_amount + amount);
 
     //update package available amount
     const update_package = await PackageModel.update_package_available_amount(
       new_amount,
       package_id
     );
+
+    //check if auto_complete is true, then status to completed on complete
+    if (auto_complete) {
+      //check difference in target amount and new amount
+      let balance = Number(target_amount - new_amount);
+
+      if (Number(balance) < 100) {
+        //no other deposit can be made
+        const update_status = await PackageModel.update_package_status(
+          "completed",
+          package_id
+        );
+
+        if (update_status) {
+          //send status update notifications to owner and admin
+        }
+      }
+    }
 
     //send notifications to package owner
   }

@@ -73,4 +73,12 @@ export const PackageModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
+  update_package_status: async (status, package_id) => {
+    const sql = `UPDATE ${db_tables.packages} SET status=? WHERE package_id=? LIMIT 1`;
+    const params = ParamsGenerator.package.update_status(status, package_id);
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
 };

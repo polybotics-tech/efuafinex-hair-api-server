@@ -23,6 +23,15 @@ packageRouter.get(
   PackageController.fetch_user_packages
 );
 
+//update package status to completed
+packageRouter.put(
+  "/completed/:package_id",
+  PackageMiddleware.validate_package_id_params,
+  AuthMiddleWare.validate_token_authorization,
+  PackageMiddleware.validate_package_ownership,
+  PackageController.mark_package_completed
+);
+
 // fetch single package
 packageRouter.get(
   "/:package_id",

@@ -121,6 +121,11 @@ export const ParamsGenerator = {
 
       return [available_amount, package_id];
     },
+    update_status: (status, package_id) => {
+      status = String(status);
+
+      return [status, package_id];
+    },
   },
   deposit: {
     create_new_deposit_record: (form) => {
