@@ -77,7 +77,11 @@ export const DefaultHelper = {
     let fee;
 
     if (wave) {
-      fee = parseInt(Number(amount * 0.015) + 20);
+      if (amount < 1000) {
+        fee = parseInt(Number(amount * 0.015) + 5);
+      } else {
+        fee = parseInt(Number(amount * 0.015) + 20);
+      }
     } else {
       if (amount < 10000) {
         fee = parseInt(Number(amount * 0.015) + 150);
@@ -86,6 +90,7 @@ export const DefaultHelper = {
       }
     }
 
-    return fee < 3000 ? fee : 3000;
+    let final = fee < 3000 ? fee : 3000;
+    return final;
   },
 };

@@ -18,6 +18,13 @@ depositRouter.post(
   DepositController.make_deposit
 );
 
+//test deposit success page
+depositRouter.get(
+  "/success",
+  DepositMiddleware.validate_transaction_reference_query,
+  DepositController.handle_success_page
+);
+
 //fetch deposit record details
 depositRouter.get(
   "/:transaction_ref",
@@ -29,10 +36,3 @@ depositRouter.get(
 
 //webhook to recieve deposits from paystack
 depositRouter.post("/paystack/webhook", DepositController.handle_webhook);
-
-//test deposit success page
-depositRouter.get(
-  "/success",
-  DepositMiddleware.validate_transaction_reference_query,
-  DepositController.handle_success_page
-);

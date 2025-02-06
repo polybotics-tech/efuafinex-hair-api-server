@@ -56,13 +56,15 @@ export const DepositController = {
     }
   },
   handle_success_page: async (req, res) => {
+    const { reference, deposit_record } = req?.body;
+
     res.status(200).json({
       success: true,
       message: "Deposit was successful",
+      data: deposit_record,
     });
 
     //call deposit-made event
-    const { reference, deposit_record } = req?.body;
     let data = { reference, deposit_record };
     DepositEvent.emit("deposit-made", { data });
   },

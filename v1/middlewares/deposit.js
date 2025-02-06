@@ -46,7 +46,7 @@ export const DepositMiddleware = {
   initialize_transaction_with_paystack: async (req, res, next) => {
     try {
       //extract needed params
-      const { amount, fee_charge, user, target_package } = req?.body;
+      const { amount, fee_charged, user, target_package } = req?.body;
       const { user_id, email } = user;
       const { package_id } = target_package;
 
@@ -56,7 +56,7 @@ export const DepositMiddleware = {
         amount,
         package_id,
         user_id,
-        fee_charge
+        fee_charged
       );
 
       if (!ps_response) {
@@ -78,7 +78,7 @@ export const DepositMiddleware = {
         transaction_ref: reference,
         amount_expected,
         authorization_url,
-        fee_charge,
+        fee_charged,
       };
 
       const create_record = await DepositModel.create_new_deposit_record(form);
@@ -108,8 +108,10 @@ export const DepositMiddleware = {
     }
   },
   validate_transaction_reference_query: async (req, res, next) => {
+    console.log("success page");
     //grab the package id
     const { reference } = req?.query;
+    console.log("ref: ", reference);
 
     //fetch deposit record
     const deposit_record = await DepositModel.fetch_deposit_by_transaction_ref(
@@ -117,7 +119,7 @@ export const DepositMiddleware = {
     );
 
     if (!deposit_record) {
-      DefaultHelper.return_error(res, 404, "Deposit record not found");
+      DefaultHelper.return_error(res, 200, "Deposit record not found h");
       return;
     }
 
