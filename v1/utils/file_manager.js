@@ -90,37 +90,56 @@ export const FileManagerUtility = {
 
     return true;
   },
-  move_uploaded_asset: async (oldPath, newPath, callback) => {
-    fs.rename(oldPath, newPath, function (err) {
-      if (err) {
-        if (err.code === "EXDEV") {
-          rewrite();
-        } else {
-          logbot.Error(
-            `Temp File Move failed - ${JSON.stringify({
-              message: "Tmp file could not be moved to designated path",
-              errMsg: err,
-              meta: { oldPath, newPath },
-            })}`
-          );
-        }
-        return;
+  move_uploaded_asset: async (
+    oldPath,
+    newPath,
+    dynamicFolder,
+    callback = (err) => {
+      console.log("move err: ", err);
+    }
+  ) => {
+    try {
+      // Ensure the destination folder exists
+      if (!fs.existsSync(dynamicFolder)) {
+        fs.mkdirSync(dynamicFolder, { recursive: true }); // Creates the folder if it doesn't exist
       }
-      //callback();
-    });
 
-    function rewrite() {
-      var readStream = fs.createReadStream(oldPath);
-      var writeStream = fs.createWriteStream(newPath);
+      setTimeout(() => {
+        fs.rename(oldPath, newPath, function (err) {
+          if (err) {
+            if (err.code === "EXDEV" || err.code === "ENOENT") {
+              rewrite();
+            } else {
+              logbot.Error(
+                `Temp File Move failed - ${JSON.stringify({
+                  message: "Tmp file could not be moved to designated path",
+                  errMsg: err,
+                  meta: { oldPath, newPath },
+                })}`
+              );
+            }
+            return;
+          }
+          //callback();
+        });
 
-      readStream.on("error", callback);
-      writeStream.on("error", callback);
+        function rewrite() {
+          var readStream = fs.createReadStream(oldPath);
+          var writeStream = fs.createWriteStream(newPath);
 
-      readStream.on("close", function () {
-        fs.unlink(oldPath, callback);
-      });
+          readStream.on("error", callback);
+          writeStream.on("error", callback);
 
-      readStream.pipe(writeStream);
+          readStream.on("close", function () {
+            fs.unlink(oldPath, callback);
+          });
+
+          readStream.pipe(writeStream);
+        }
+      }, 2000);
+      //
+    } catch (error) {
+      logbot.Error(`Temp File Move failed - from catch - ${error?.message}`);
     }
   },
 };

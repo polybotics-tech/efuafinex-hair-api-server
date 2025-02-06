@@ -110,9 +110,11 @@ export const UploadMiddleWare = {
       user_id,
       media_tmp_file_name
     );
-    let move_file = await FileManagerUtility.move_uploaded_asset(
+    const dynamicFolder = `${config.fileUpload.imageUploadDir}${user_id}/`;
+    await FileManagerUtility.move_uploaded_asset(
       media_tmp_path,
-      new_path
+      new_path,
+      dynamicFolder
     );
 
     //store upload url

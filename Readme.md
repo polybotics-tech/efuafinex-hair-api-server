@@ -43,6 +43,10 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 
 `/user/notify/` - PUT - _formData{ push_notify, email_notify }_ - **(token required)**
 
+#### Update User Profile Thumbnail
+
+`/user/thumbnail/` - PUT - _formData{ file }_ - **(token required)**
+
 ### /package/ Enpoints
 
 #### Create New Package
