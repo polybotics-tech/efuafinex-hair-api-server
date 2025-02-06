@@ -14,21 +14,63 @@ This api server is currently available on **/v1/**, hence every endpoints listed
 
 Listed below are the available groups of endpoints for you to test out:
 
-- /auth endpoints
-- /user endpoints
+- /auth/ endpoints
+- /user/ endpoints
+- /package/ endpoint
+- /deposit/ endpoint
 
-### /auth Endpoints
+### /auth/ Endpoints
 
-#### login
+These endpoints handle most of the authentication activities, like registering a new user account, logging in an existing user when the correct credentials are passed, as well as returning the required _access token_ on a successful request operation.
 
-`/auth/login/` - POST - formData{ email, pass }
+#### Login Existing User
 
-#### register
+`/auth/login/` - POST - _formData{ email, pass }_
 
-`/auth/register/` - POST - formData{ email, fullname, phone, pass, confirm_pass }
+#### Register New User
 
-### /user Enpoints
+`/auth/register/` - POST - _formData{ email, fullname, phone, pass, confirm_pass }_
 
-#### update password
+### /user/ Enpoints
 
-`/user/pass/` - PUT - formData{ pass, new_pass, confirm_pass }
+The _/user/_ endpoints are mainly used to update user details and preferences. However, a used must have already gotten an _access token_ from any of the _/auth/_ endpoints, before operations can be allowed.
+
+#### Update User Password
+
+`/user/pass/` - PUT - _formData{ pass, new_pass, confirm_pass }_ - **(token required)**
+
+#### Update User Notifcation Preference
+
+`/user/notify/` - PUT - _formData{ push_notify, email_notify }_ - **(token required)**
+
+### /package/ Enpoints
+
+#### Create New Package
+
+`/package/` - POST - _formData{ title, description, is_defined, target_amount, auto_complete, fixed_deadline, deadline, duration, has_photo, photo }_ - **(token required)**
+
+#### Fetch Single Package
+
+`/package/:package_id` - GET - **(token required)**
+
+#### Fetch Multiple User Packages
+
+`/package/` - GET - _query{?page, ?sort}_ - **(token required)**
+
+### /deposit/ Enpoints
+
+#### Fund A Package
+
+`/deposit/:package_id` - POST - _formData{ amount }_ - **(token required)**
+
+#### Fetch Deposit Record Details
+
+`/deposit/:transaction_ref` - GET - **(token required)**
+
+#### Fetch Multiple Deposit Records For User
+
+`/deposit/` - GET - _query{?page, ?sort}_ - **(token required)**
+
+#### Fetch Multilple Deposit Records For A Package
+
+`/deposit/records/:package_id` - GET - _query{?page}_ - **(token required)**

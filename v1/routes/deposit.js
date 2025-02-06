@@ -6,7 +6,7 @@ import { DepositController } from "../controllers/deposit.js";
 
 export const depositRouter = e.Router();
 
-//deposit fund for package
+//deposit fund for a package
 depositRouter.post(
   "/:package_id",
   DepositMiddleware.validate_make_deposit_form,
@@ -22,6 +22,8 @@ depositRouter.post(
 depositRouter.get(
   "/:transaction_ref",
   DepositMiddleware.validate_transaction_reference_params,
+  AuthMiddleWare.validate_token_authorization,
+  DepositMiddleware.validate_deposit_ownership,
   DepositController.fetch_single_record
 );
 

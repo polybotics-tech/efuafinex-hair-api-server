@@ -141,4 +141,18 @@ export const DepositMiddleware = {
 
     next();
   },
+  validate_deposit_ownership: async (req, res, next) => {
+    const { user_id, deposit_record } = req?.body;
+
+    if (user_id != deposit_record?.user_id) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Access denied. Permission not granted"
+      );
+      return;
+    }
+
+    next();
+  },
 };
