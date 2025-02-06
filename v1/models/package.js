@@ -62,4 +62,15 @@ export const PackageModel = {
       return 0;
     }
   },
+  update_package_available_amount: async (available_amount, package_id) => {
+    const sql = `UPDATE ${db_tables.packages} SET available_amount=? WHERE package_id=? LIMIT 1`;
+    const params = ParamsGenerator.package.update_available_amount(
+      available_amount,
+      package_id
+    );
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
 };

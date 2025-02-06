@@ -73,6 +73,20 @@ export const PackageMiddleware = {
 
     next();
   },
+  validate_package_ownership: async (req, res, next) => {
+    const { user_id, target_package } = req?.body;
+
+    if (user_id != target_package?.user_id) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Access denied. Permission not granted"
+      );
+      return;
+    }
+
+    next();
+  },
   fetch_user_packages: async (req, res, next) => {
     try {
       const { user, page } = req?.body;

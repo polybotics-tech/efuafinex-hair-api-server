@@ -82,4 +82,10 @@ export const IdGenerator = {
   package_id: `PID-${random_num(10, 99)}${random_aph(
     random_num(2, 4)
   )}${parseInt(Number(dt.getTime()) / 1000)}`,
+  transaction_ref: `TREF-${random_aph(5)}${parseInt(
+    Number(dt.getTime()) / 1000
+  )}${random_num(10, 99)}`,
+  deposit_id: `DEPOSIT-${random_num(10, 99)}${random_aph(2)}${parseInt(
+    Number(dt.getTime()) / 1000
+  )}`,
 };

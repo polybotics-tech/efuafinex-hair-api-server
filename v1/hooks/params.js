@@ -116,5 +116,64 @@ export const ParamsGenerator = {
         status,
       ];
     },
+    update_available_amount: (available_amount, package_id) => {
+      available_amount = Number(available_amount);
+
+      return [available_amount, package_id];
+    },
+  },
+  deposit: {
+    create_new_deposit_record: (form) => {
+      let {
+        user_id,
+        package_id,
+        transaction_ref,
+        amount_expected,
+        authorization_url,
+      } = form;
+
+      let created_time = FormatDateTime.to_database_entry();
+      let deposit_id = IdGenerator.deposit_id;
+      amount_expected = Number(amount_expected);
+      let amount_paid = Number(0);
+      let status = "pending";
+      let last_updated = FormatDateTime.to_database_entry();
+      authorization_url = String(authorization_url);
+      let extra = JSON.stringify({
+        sender_name: "",
+        sender_bank_account_number: "",
+        sender_bank: "",
+      });
+
+      return [
+        created_time,
+        deposit_id,
+        transaction_ref,
+        package_id,
+        user_id,
+        amount_expected,
+        amount_paid,
+        status,
+        last_updated,
+        authorization_url,
+        extra,
+      ];
+    },
+    update_status: (status, transaction_ref) => {
+      let last_updated = FormatDateTime.to_database_entry();
+      status = status === "success" || "pending" ? String(status) : "failed";
+
+      return [last_updated, status, transaction_ref];
+    },
+    update_amount_paid: (amount_paid, transaction_ref) => {
+      amount_paid = Number(amount_paid);
+
+      return [amount_paid, transaction_ref];
+    },
+    update_extra: (extra, transaction_ref) => {
+      extra = JSON.stringify(extra);
+
+      return [extra, transaction_ref];
+    },
   },
 };

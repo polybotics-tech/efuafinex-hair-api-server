@@ -31,6 +31,17 @@ export const config = {
     timeFormat: "h:mm:ss A",
     onlyFileLogging: true, //change to true on production / false on debugging stage
   },
+  paystack: {
+    secretKey: process.env.EFH_PAYSTACK_SECRET_KEY,
+    publicKey: process.env.EFH_PAYSTACK_PUBLIC_KEY,
+  },
+  deposit: {
+    minimumAllowed: 100,
+    maximumAllowed: 500000,
+  },
+  publicPath: {
+    depositSuccess: "http://192.168.138.31:5050/v1/deposit/success",
+  },
   pageLimit: 20, //20
   tokenSecretKey: process.env.EFH_TOKEN_SECRET_KEY,
   tokenAuthorizationKey: process.env.EFH_TOKEN_AUTH_KEY,

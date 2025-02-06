@@ -2,6 +2,7 @@ import e from "express";
 import { authRouter } from "./routes/auth.js";
 import { packageRouter } from "./routes/package.js";
 import { userRouter } from "./routes/user.js";
+import { depositRouter } from "./routes/deposit.js";
 
 export const v1 = e.Router();
 
@@ -19,3 +20,6 @@ v1.use("/user", userRouter);
 
 //package route
 v1.use("/package", packageRouter);
+
+//deposit route
+v1.use("/deposit", depositRouter);
