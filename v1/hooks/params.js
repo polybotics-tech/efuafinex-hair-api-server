@@ -130,14 +130,14 @@ export const ParamsGenerator = {
         transaction_ref,
         amount_expected,
         authorization_url,
-        fee_charge,
+        fee_charged,
       } = form;
 
       let created_time = FormatDateTime.to_database_entry();
       let deposit_id = IdGenerator.deposit_id;
       amount_expected = Number(amount_expected);
       let amount_paid = Number(0);
-      fee_charge = Number(fee_charge);
+      fee_charged = Number(fee_charged);
       let status = "pending";
       let last_updated = FormatDateTime.to_database_entry();
       authorization_url = String(authorization_url);
@@ -155,7 +155,7 @@ export const ParamsGenerator = {
         user_id,
         amount_expected,
         amount_paid,
-        fee_charge,
+        fee_charged,
         status,
         last_updated,
         authorization_url,

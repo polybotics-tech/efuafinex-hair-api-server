@@ -37,10 +37,10 @@ export const DepositMiddleware = {
     }
 
     //calculate amount fee charge
-    const fee_charge = DefaultHelper.calculate_fee_charge_from_amount(amount);
+    const fee_charged = DefaultHelper.calculate_fee_charge_from_amount(amount);
 
     //proceed
-    req.body.fee_charge = fee_charge;
+    req.body.fee_charged = fee_charged;
     next();
   },
   initialize_transaction_with_paystack: async (req, res, next) => {

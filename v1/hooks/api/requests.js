@@ -52,7 +52,7 @@ export const API_REQUESTS = {
       amount,
       package_id,
       user_id,
-      fee_charge
+      fee_charged
     ) => {
       try {
         const options = {
@@ -62,9 +62,10 @@ export const API_REQUESTS = {
           metadata: {
             user_id,
             package_id,
-            fee_charge,
+            fee_charged,
           },
           callback_url: config.publicPath.depositSuccess,
+          channels: ["bank_transfer"],
         };
 
         //send request
