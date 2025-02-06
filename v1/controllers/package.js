@@ -60,7 +60,7 @@ export const PackageController = {
     let data = { packages, meta };
 
     //emit event
-    PackageEvent.emit("package-fetched", { data });
+    PackageEvent.emit("packages-fetched");
 
     //
     DefaultHelper.return_success(

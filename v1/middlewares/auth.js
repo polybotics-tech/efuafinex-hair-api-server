@@ -210,9 +210,11 @@ export const AuthMiddleWare = {
     //obtain page from query or assign page 1
     const page =
       req.query?.page && req.query?.page > 0 ? parseInt(req?.query?.page) : 1;
+    const sort = req.query?.sort || "";
 
     //append current page to body request
     req.body.page = page;
+    req.body.sort = sort;
     next();
   },
 };

@@ -2,6 +2,7 @@ import EventEmitter from "events";
 import { UserModel } from "../models/user.js";
 import { logbot } from "../../logger.js";
 import { PackageModel } from "../models/package.js";
+import { DepositEvent } from "./deposit.js";
 
 export const PackageEvent = new EventEmitter();
 
@@ -25,6 +26,11 @@ PackageEvent.on("package-fetched", async (args) => {
   } catch (error) {
     logbot.Error(error?.message);
   }
+});
+
+PackageEvent.on("packages-fetched", async () => {
+  //call event to update any pending deposit on records
+  DepositEvent.emit("update-pending-deposits");
 });
 
 PackageEvent.on("fund-added-to-package", async (args) => {

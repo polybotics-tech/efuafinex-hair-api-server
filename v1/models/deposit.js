@@ -1,3 +1,4 @@
+import { config } from "../../config.js";
 import { DB } from "../hooks/db.js";
 import { ParamsGenerator } from "../hooks/params.js";
 import { db_tables } from "../utils/db_tables.js";
@@ -83,5 +84,36 @@ export const DepositModel = {
     const data = DefaultHelper.empty_or_rows(rows);
 
     return data;
+  },
+  fetch_user_deposits: async (user_id, page = 1) => {
+    const offset = DefaultHelper.get_offset(page);
+
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE user_id = ? LIMIT ${offset}, ${config.pageLimit}`;
+    const params = [user_id];
+
+    const rows = await DB.read(sql, params);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    if (data.length > 0) {
+      data.forEach((d) => {
+        d.extra = JSON.parse(d?.extra);
+      });
+    }
+
+    return data;
+  },
+  count_all_user_deposits: async (user_id) => {
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE user_id = ?`;
+    const params = [user_id];
+
+    const res = await DB.read(sql, params);
+
+    if (res?.length > 0 && res[0]?.hasOwnProperty("COUNT(*)")) {
+      const count = res[0]["COUNT(*)"];
+      return count;
+    } else {
+      return 0;
+    }
   },
 };

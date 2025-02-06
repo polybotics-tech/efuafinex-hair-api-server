@@ -6,6 +6,15 @@ import { DepositController } from "../controllers/deposit.js";
 
 export const depositRouter = e.Router();
 
+//fetch multiple deposit records for user
+depositRouter.get(
+  "/",
+  AuthMiddleWare.validate_token_authorization,
+  AuthMiddleWare.integrate_pagination_query,
+  DepositMiddleware.fetch_user_deposits,
+  DepositController.fetch_user_deposits
+);
+
 //deposit fund for a package
 depositRouter.post(
   "/:package_id",

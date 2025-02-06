@@ -110,3 +110,8 @@ DepositEvent.on("update-pending-deposits", async () => {
     });
   }
 });
+
+DepositEvent.on("deposits-fetched", async () => {
+  //call event to update any pending deposit on records
+  DepositEvent.emit("update-pending-deposits");
+});

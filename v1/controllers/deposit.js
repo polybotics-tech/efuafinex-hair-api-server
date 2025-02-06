@@ -97,4 +97,27 @@ export const DepositController = {
     );
     return;
   },
+  fetch_user_deposits: async (req, res) => {
+    const { deposits, meta } = req?.body;
+
+    if (!deposits || !meta) {
+      DefaultHelper.return_error(res, 400, "Unable to fetch user deposits");
+      return;
+    }
+
+    //if meta and deposits stored in request body, return data
+    let data = { deposits, meta };
+
+    //emit event
+    DepositEvent.emit("deposits-fetched");
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "User deposits fetched successfully",
+      data
+    );
+    return;
+  },
 };

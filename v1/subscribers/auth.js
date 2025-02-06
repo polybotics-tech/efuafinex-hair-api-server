@@ -1,6 +1,5 @@
 import EventEmitter from "events";
 import { UserModel } from "../models/user.js";
-import { DepositEvent } from "./deposit.js";
 export const AuthEvent = new EventEmitter();
 
 //--auth event listeners
@@ -18,9 +17,6 @@ AuthEvent.on("login", async (args) => {
   } catch (error) {
     logbot.Error(error?.message);
   }
-
-  //call event to update any pending deposit on records
-  DepositEvent.emit("update-pending-deposits");
 });
 
 AuthEvent.on("register", async (args) => {
