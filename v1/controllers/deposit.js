@@ -97,11 +97,11 @@ export const DepositController = {
     );
     return;
   },
-  fetch_user_deposits: async (req, res) => {
+  fetch_multiple_deposits: async (req, res) => {
     const { deposits, meta } = req?.body;
 
     if (!deposits || !meta) {
-      DefaultHelper.return_error(res, 400, "Unable to fetch user deposits");
+      DefaultHelper.return_error(res, 400, "Unable to fetch deposits");
       return;
     }
 
@@ -115,7 +115,7 @@ export const DepositController = {
     DefaultHelper.return_success(
       res,
       200,
-      "User deposits fetched successfully",
+      "Deposits fetched successfully",
       data
     );
     return;

@@ -193,4 +193,39 @@ export const DepositMiddleware = {
       return;
     }
   },
+  fetch_package_deposits: async (req, res, next) => {
+    try {
+      const { target_package, page } = req?.body;
+      const { package_id } = target_package;
+
+      //fetch deposits by package_id
+      const deposits = await DepositModel.fetch_package_deposits(
+        package_id,
+        page
+      );
+
+      //meta data
+      const tup = await DepositModel.count_all_package_deposits(package_id);
+      const meta = {
+        package_id,
+        page,
+        total_results: parseInt(tup),
+        has_next_page: DefaultHelper.check_has_prev_next_page(page, tup, true),
+        has_prev_page: DefaultHelper.check_has_prev_next_page(page, tup, false),
+      };
+
+      //append to body request
+      req.body.deposits = deposits;
+      req.body.meta = meta;
+
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error occured"
+      );
+      return;
+    }
+  },
 };

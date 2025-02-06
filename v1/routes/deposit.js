@@ -12,8 +12,29 @@ depositRouter.get(
   AuthMiddleWare.validate_token_authorization,
   AuthMiddleWare.integrate_pagination_query,
   DepositMiddleware.fetch_user_deposits,
-  DepositController.fetch_user_deposits
+  DepositController.fetch_multiple_deposits
 );
+
+//fetch multiple deposit records for a package
+depositRouter.get(
+  "/records/:package_id",
+  AuthMiddleWare.validate_token_authorization,
+  AuthMiddleWare.integrate_pagination_query,
+  PackageMiddleware.validate_package_id_params,
+  PackageMiddleware.validate_package_ownership,
+  DepositMiddleware.fetch_package_deposits,
+  DepositController.fetch_multiple_deposits
+);
+
+//test deposit success page
+depositRouter.get(
+  "/success",
+  DepositMiddleware.validate_transaction_reference_query,
+  DepositController.handle_success_page
+);
+
+//webhook to recieve deposits from paystack
+depositRouter.post("/paystack/webhook", DepositController.handle_webhook);
 
 //deposit fund for a package
 depositRouter.post(
@@ -27,13 +48,6 @@ depositRouter.post(
   DepositController.make_deposit
 );
 
-//test deposit success page
-depositRouter.get(
-  "/success",
-  DepositMiddleware.validate_transaction_reference_query,
-  DepositController.handle_success_page
-);
-
 //fetch deposit record details
 depositRouter.get(
   "/:transaction_ref",
@@ -42,6 +56,3 @@ depositRouter.get(
   DepositMiddleware.validate_deposit_ownership,
   DepositController.fetch_single_record
 );
-
-//webhook to recieve deposits from paystack
-depositRouter.post("/paystack/webhook", DepositController.handle_webhook);

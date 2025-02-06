@@ -116,4 +116,35 @@ export const DepositModel = {
       return 0;
     }
   },
+  fetch_package_deposits: async (package_id, page = 1) => {
+    const offset = DefaultHelper.get_offset(page);
+
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE package_id = ? LIMIT ${offset}, ${config.pageLimit}`;
+    const params = [package_id];
+
+    const rows = await DB.read(sql, params);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    if (data.length > 0) {
+      data.forEach((d) => {
+        d.extra = JSON.parse(d?.extra);
+      });
+    }
+
+    return data;
+  },
+  count_all_package_deposits: async (package_id) => {
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE package_id = ?`;
+    const params = [package_id];
+
+    const res = await DB.read(sql, params);
+
+    if (res?.length > 0 && res[0]?.hasOwnProperty("COUNT(*)")) {
+      const count = res[0]["COUNT(*)"];
+      return count;
+    } else {
+      return 0;
+    }
+  },
 };
