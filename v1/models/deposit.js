@@ -24,6 +24,10 @@ export const DepositModel = {
 
     const data = DefaultHelper.empty_or_rows(rows);
 
+    if (data.length > 0) {
+      data[0].extra = JSON.parse(data[0]?.extra);
+    }
+
     return data.length > 0 ? data[0] : false;
   },
   fetch_deposit_by_transaction_ref: async (transaction_ref) => {
@@ -33,6 +37,10 @@ export const DepositModel = {
     const rows = await DB.read(sql, params);
 
     const data = DefaultHelper.empty_or_rows(rows);
+
+    if (data.length > 0) {
+      data[0].extra = JSON.parse(data[0]?.extra);
+    }
 
     return data.length > 0 ? data[0] : false;
   },
