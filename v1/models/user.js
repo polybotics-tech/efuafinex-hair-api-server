@@ -92,4 +92,12 @@ export const UserModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
+  update_user_thumbnail: async (thumbnail, user_id) => {
+    const sql = `UPDATE ${db_tables.users} SET last_updated=?, last_seen=?, thumbnail=? WHERE user_id=? LIMIT 1`;
+    const params = ParamsGenerator.user.update_thumbnail(thumbnail, user_id);
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
 };

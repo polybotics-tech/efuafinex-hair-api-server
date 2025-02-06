@@ -88,4 +88,15 @@ export const IdGenerator = {
   deposit_id: `DEPOSIT-${random_num(10, 99)}${random_aph(2)}${parseInt(
     Number(dt.getTime()) / 1000
   )}`,
+  photo_upload_name: (photo) => {
+    const ext = photo?.mimetype.split("/")[1];
+
+    let year = dt.getFullYear();
+    let month = String(Number(dt.getMonth() + 1)).padStart(2, "0");
+    let date = String(dt.getDate()).padStart(2, "0");
+
+    return `PHOTO-${year}${month}${date}-${random_aph(
+      random_num(5, 10)
+    )}${dt.getTime()}${random_num(10, 99)}.${ext}`;
+  },
 };

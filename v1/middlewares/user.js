@@ -3,6 +3,7 @@ import { UserModel } from "../models/user.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { FormValidator } from "./validator.js";
 import { config } from "../../config.js";
+import { FileManagerUtility } from "../utils/file_manager.js";
 
 export const UserMiddleware = {
   validate_update_pass_form: async (req, res, next) => {
@@ -98,5 +99,43 @@ export const UserMiddleware = {
 
     req.body.user = user;
     next();
+  },
+  store_new_user_thumbnail: async (req, res, next) => {
+    try {
+      const { user_id, user, upload_url } = req?.body;
+      const { thumbnail } = user;
+
+      //attempt to update user thumbnail
+      const updated = await UserModel.update_user_thumbnail(
+        upload_url,
+        user_id
+      );
+
+      if (!updated) {
+        return DefaultHelper.return_error(
+          res,
+          500,
+          "Error updating profile thumbnail"
+        );
+      }
+
+      //if updated, attempt to delete former thumbnail if any
+      if (thumbnail) {
+        await FileManagerUtility.delete_uploaded_asset(thumbnail);
+      }
+
+      //fetch the updated user
+      let updated_user = await UserModel.fetch_user_by_user_id(user_id);
+
+      //refresh
+      req.body.user = updated_user;
+      next();
+    } catch (error) {
+      return DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Error updating profile thumbnail"
+      );
+    }
   },
 };

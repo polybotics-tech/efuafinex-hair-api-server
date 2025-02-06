@@ -63,6 +63,13 @@ export const ParamsGenerator = {
 
       return [last_seen, user_id];
     },
+    update_thumbnail: (thumbnail, user_id) => {
+      let last_updated = FormatDateTime.to_database_entry();
+      let last_seen = FormatDateTime.to_database_entry();
+      thumbnail = `${thumbnail}`;
+
+      return [last_updated, last_seen, thumbnail, user_id];
+    },
   },
   package: {
     create_new_package: (form) => {

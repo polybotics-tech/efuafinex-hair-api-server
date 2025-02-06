@@ -42,6 +42,13 @@ export const config = {
   publicPath: {
     depositSuccess: "http://192.168.138.31:5050/v1/deposit/success",
   },
+  fileUpload: {
+    sizeLimit: 30 * 1024 * 1024, //maximum file size allowed for upload  - 30mb
+    tmpUploadDir: path.join(__dirname, "/uploads/tmp/"),
+    imageUploadDir: path.join(__dirname, "/uploads/photos/"),
+    imageResourceDir: "/media/photos/",
+    uploadedAssetDir: path.join(__dirname, "/uploads/"),
+  },
   pageLimit: 20, //20
   tokenSecretKey: process.env.EFH_TOKEN_SECRET_KEY,
   tokenAuthorizationKey: process.env.EFH_TOKEN_AUTH_KEY,

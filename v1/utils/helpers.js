@@ -1,3 +1,4 @@
+import path from "path";
 import { config } from "../../config.js";
 import { logbot } from "../../logger.js";
 
@@ -92,5 +93,39 @@ export const DefaultHelper = {
 
     let final = fee < 3000 ? fee : 3000;
     return final;
+  },
+  format_size_to_readable: (size) => {
+    const size_ext = ["B", "KB", "MB", "GB"];
+    const size_divisor = {
+      KB: 1024,
+      MB: 1048576,
+      GB: 1073741824,
+    };
+
+    if (Number(size) >= size_divisor["GB"]) {
+      return `${parseFloat(size / size_divisor["GB"]).toFixed(2)}${
+        size_ext[3]
+      }`;
+    }
+
+    if (Number(size) >= size_divisor["MB"]) {
+      return `${parseFloat(size / size_divisor["MB"]).toFixed(2)}${
+        size_ext[2]
+      }`;
+    }
+
+    if (Number(size) >= size_divisor["KB"]) {
+      return `${parseFloat(size / size_divisor["KB"]).toFixed(2)}${
+        size_ext[1]
+      }`;
+    }
+
+    return `${parseInt(size)}${size_ext[0]}`;
+  },
+  return_new_tmp_path: (user_id, old_name) => {
+    return path.join(
+      config.fileUpload.imageUploadDir,
+      `${user_id}/${old_name}`
+    );
   },
 };

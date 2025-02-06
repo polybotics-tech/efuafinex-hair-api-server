@@ -1,15 +1,14 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import multer from "multer";
 
 import { v1 } from "./v1/index.js";
 import { ErrorMiddleware } from "./v1/middlewares/error.js";
+import { mediaRouter } from "./uploads/index.js";
 
 //initialize port and server
 const PORT = process.env.PORT || 5050;
 const server = express();
-const upload = multer();
 
 //server configuration for CORS
 server.use(cors());
@@ -30,7 +29,10 @@ server.get("/", (req, res) => {
 });
 
 //--api version 1
-server.use("/v1", upload.any(), v1);
+server.use("/v1", v1);
+
+// --medias
+server.use("/media", mediaRouter);
 
 // this is default in case of unmatched routes
 server.use(ErrorMiddleware.handle_unmatched_routes);
