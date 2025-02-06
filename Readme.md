@@ -25,11 +25,11 @@ These endpoints handle most of the authentication activities, like registering a
 
 #### Login Existing User
 
-`/auth/login/` - POST - _formData{ email, pass }_
+`/auth/login/` - POST - _json{ email, pass }_
 
 #### Register New User
 
-`/auth/register/` - POST - _formData{ email, fullname, phone, pass, confirm_pass }_
+`/auth/register/` - POST - _json{ email, fullname, phone, pass, confirm_pass }_
 
 ### /user/ Enpoints
 
@@ -37,11 +37,11 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 
 #### Update User Password
 
-`/user/pass/` - PUT - _formData{ pass, new_pass, confirm_pass }_ - **(token required)**
+`/user/pass/` - PUT - _json{ pass, new_pass, confirm_pass }_ - **(token required)**
 
 #### Update User Notifcation Preference
 
-`/user/notify/` - PUT - _formData{ push_notify, email_notify }_ - **(token required)**
+`/user/notify/` - PUT - _json{ push_notify, email_notify }_ - **(token required)**
 
 #### Update User Profile Thumbnail
 
@@ -51,7 +51,7 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 
 #### Create New Package
 
-`/package/` - POST - _formData{ title, description, is_defined, target_amount, auto_complete, fixed_deadline, deadline, duration, has_photo, photo }_ - **(token required)**
+`/package/` - POST - _json{ title, description, is_defined, target_amount, auto_complete, fixed_deadline, deadline, duration, has_photo, photo }_ - **(token required)**
 
 #### Fetch Single Package
 
@@ -69,7 +69,7 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 
 #### Fund A Package
 
-`/deposit/:package_id` - POST - _formData{ amount }_ - **(token required)**
+`/deposit/:package_id` - POST - _json{ amount }_ - **(token required)**
 
 #### Fetch Deposit Record Details
 

@@ -1,4 +1,5 @@
 import e from "express";
+
 import { AuthMiddleWare } from "../middlewares/auth.js";
 import { UserMiddleware } from "../middlewares/user.js";
 import { UserController } from "../controllers/user.js";
