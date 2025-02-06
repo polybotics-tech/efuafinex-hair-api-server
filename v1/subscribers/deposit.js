@@ -12,6 +12,7 @@ DepositEvent.on("deposit-made", async (args) => {
   // extract transaction reference
   const { data } = args;
   const { reference, deposit_record } = data;
+  const { fee_charge } = deposit_record;
 
   //send request to paystack to verify transaction
   const verify_response = await API_REQUESTS.Paystack.verify_transaction(
@@ -20,8 +21,8 @@ DepositEvent.on("deposit-made", async (args) => {
 
   if (verify_response) {
     //extract needed data
-    const { status, amount, fees, channel, authorization } = verify_response;
-    const paid_amount = parseInt(Number(amount / 100) - Number(fees / 100));
+    const { status, amount, channel, authorization } = verify_response;
+    const paid_amount = parseInt(Number(amount / 100) - Number(fee_charge));
 
     if (deposit_record?.status != status) {
       //update deposit status on db

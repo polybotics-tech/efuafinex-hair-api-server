@@ -17,12 +17,14 @@ export const DepositController = {
     }
 
     //if deposit stored in request body, return data
-    const { transaction_ref, authorization_url, amount_expected } = deposit;
+    const { transaction_ref, authorization_url, amount_expected, fee_charge } =
+      deposit;
 
     let data = {
       transaction_ref,
       authorization_url,
       amount_expected,
+      fee_charge,
     };
 
     //

@@ -36,13 +36,17 @@ export const DepositMiddleware = {
       }
     }
 
+    //calculate amount fee charge
+    const fee_charge = DefaultHelper.calculate_fee_charge_from_amount(amount);
+
     //proceed
+    req.body.fee_charge = fee_charge;
     next();
   },
   initialize_transaction_with_paystack: async (req, res, next) => {
     try {
       //extract needed params
-      const { amount, user, target_package } = req?.body;
+      const { amount, fee_charge, user, target_package } = req?.body;
       const { user_id, email } = user;
       const { package_id } = target_package;
 
@@ -51,7 +55,8 @@ export const DepositMiddleware = {
         email,
         amount,
         package_id,
-        user_id
+        user_id,
+        fee_charge
       );
 
       if (!ps_response) {
@@ -73,6 +78,7 @@ export const DepositMiddleware = {
         transaction_ref: reference,
         amount_expected,
         authorization_url,
+        fee_charge,
       };
 
       const create_record = await DepositModel.create_new_deposit_record(form);

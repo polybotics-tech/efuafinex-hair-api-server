@@ -47,7 +47,13 @@ export const API_REQUESTS = {
         return false;
       }
     },
-    initialize_transaction: async (email, amount, package_id, user_id) => {
+    initialize_transaction: async (
+      email,
+      amount,
+      package_id,
+      user_id,
+      fee_charge
+    ) => {
       try {
         const options = {
           email,
@@ -56,6 +62,7 @@ export const API_REQUESTS = {
           metadata: {
             user_id,
             package_id,
+            fee_charge,
           },
           callback_url: config.publicPath.depositSuccess,
         };

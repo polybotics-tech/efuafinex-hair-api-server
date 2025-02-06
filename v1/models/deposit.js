@@ -5,7 +5,7 @@ import { DefaultHelper } from "../utils/helpers.js";
 
 export const DepositModel = {
   create_new_deposit_record: async (form) => {
-    const sql = `INSERT INTO ${db_tables.deposits} (created_time, deposit_id, transaction_ref, package_id, user_id, amount_expected, amount_paid, status, last_updated, authorization_url, extra) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO ${db_tables.deposits} (created_time, deposit_id, transaction_ref, package_id, user_id, amount_expected, amount_paid, fee_charge, status, last_updated, authorization_url, extra) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
     const params = ParamsGenerator.deposit.create_new_deposit_record(form);
 
     //attempt save to db

@@ -72,4 +72,20 @@ export const DefaultHelper = {
       return user;
     }
   },
+  calculate_fee_charge_from_amount: (amount) => {
+    let wave = Boolean(Number(amount) < 2000); //whether to wave extra charge
+    let fee;
+
+    if (wave) {
+      fee = parseInt(Number(amount * 0.015) + 20);
+    } else {
+      if (amount < 10000) {
+        fee = parseInt(Number(amount * 0.015) + 150);
+      } else {
+        fee = parseInt(Number(amount * 0.015) + 250);
+      }
+    }
+
+    return fee < 3000 ? fee : 3000;
+  },
 };
