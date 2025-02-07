@@ -245,7 +245,7 @@ export const AuthMiddleWare = {
 
     //append current page to body request
     req.body.page = page;
-    req.body.sort = sort;
+    req.body.sort = String(sort)?.toLowerCase();
     next();
   },
 };

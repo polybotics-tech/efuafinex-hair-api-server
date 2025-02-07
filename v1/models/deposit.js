@@ -85,10 +85,15 @@ export const DepositModel = {
 
     return data;
   },
-  fetch_user_deposits: async (user_id, page = 1) => {
+  fetch_user_deposits: async (user_id, page = 1, sort = "all") => {
     const offset = DefaultHelper.get_offset(page);
 
-    const sql = `SELECT * FROM ${db_tables.deposits} WHERE user_id = ? LIMIT ${offset}, ${config.pageLimit}`;
+    let filter = "";
+    if (sort != "all") {
+      filter = ` && status = '${sort}'`;
+    }
+
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE user_id = ?${filter} LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);
@@ -103,8 +108,13 @@ export const DepositModel = {
 
     return data;
   },
-  count_all_user_deposits: async (user_id) => {
-    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE user_id = ?`;
+  count_all_user_deposits: async (user_id, sort = "all") => {
+    let filter = "";
+    if (sort != "all") {
+      filter = ` && status = '${sort}'`;
+    }
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE user_id = ?${filter}`;
     const params = [user_id];
 
     const res = await DB.read(sql, params);
