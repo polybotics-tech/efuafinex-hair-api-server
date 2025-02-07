@@ -53,12 +53,12 @@ export const DefaultHelper = {
   },
 
   check_has_prev_next_page: (page = 1, totalRes, isNext) => {
-    const approxPages = Math.round(totalRes / config?.pageLimit);
+    const approxPages = Number(totalRes / config?.pageLimit);
 
     if (isNext) {
-      return page < approxPages ? true : false;
+      return parseInt(page) < approxPages ? true : false;
     } else {
-      return page > 1 ? true : false;
+      return parseInt(page) > 1 ? true : false;
     }
   },
 
