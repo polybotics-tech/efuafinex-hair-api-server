@@ -65,7 +65,7 @@ export const API_REQUESTS = {
             fee_charged,
           },
           callback_url: config.publicPath.depositSuccess,
-          channels: ["bank_transfer"],
+          channels: ["card"],
         };
 
         //send request
