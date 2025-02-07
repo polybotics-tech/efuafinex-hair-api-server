@@ -138,4 +138,15 @@ export const UserMiddleware = {
       );
     }
   },
+  update_user_last_seen: async (req, res, next) => {
+    const { user } = req?.body;
+    const { user_id } = user;
+
+    // update user last seen
+    if (user_id) {
+      await UserModel.update_user_last_seen(user_id);
+    }
+
+    next();
+  },
 };

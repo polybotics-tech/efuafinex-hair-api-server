@@ -154,9 +154,7 @@ export const ParamsGenerator = {
       let last_updated = FormatDateTime.to_database_entry();
       authorization_url = String(authorization_url);
       let extra = JSON.stringify({
-        sender_name: "",
-        sender_bank_account_number: "",
-        sender_bank: "",
+        channel: "",
       });
 
       return [

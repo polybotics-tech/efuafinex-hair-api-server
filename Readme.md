@@ -31,6 +31,10 @@ These endpoints handle most of the authentication activities, like registering a
 
 `/auth/register/` - POST - _json{ email, fullname, phone, pass, confirm_pass }_
 
+#### Re-validate User Token
+
+`/auth/revalidate` - GET - **(token required)**
+
 ### /user/ Enpoints
 
 The _/user/_ endpoints are mainly used to update user details and preferences. However, a used must have already gotten an _access token_ from any of the _/auth/_ endpoints, before operations can be allowed.

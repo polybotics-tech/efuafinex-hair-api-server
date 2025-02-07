@@ -21,7 +21,7 @@ DepositEvent.on("update-status", async (args) => {
 
   if (verify_response) {
     //extract needed data
-    const { status, amount, channel, authorization } = verify_response;
+    const { status, amount } = verify_response;
     const paid_amount = parseInt(Number(amount / 100) - Number(fee_charged));
 
     if (deposit_record?.status != status) {
@@ -47,7 +47,7 @@ DepositEvent.on("deposit-made", async (args) => {
 
   if (verify_response) {
     //extract needed data
-    const { status, amount, channel, authorization } = verify_response;
+    const { status, amount, authorization } = verify_response;
     const paid_amount = parseInt(Number(amount / 100) - Number(fee_charged));
 
     if (deposit_record?.status != status) {
@@ -72,23 +72,19 @@ DepositEvent.on("deposit-made", async (args) => {
           });
         }
 
-        if (channel === "bank_transfer") {
-          //update deposit record extra
-          const {
-            sender_bank,
-            sender_name,
-            sender_bank_account_number,
-            narration,
-          } = authorization;
-          const extra = {
-            sender_bank,
-            sender_name,
-            sender_bank_account_number,
-            narration,
-          };
+        //update deposit record extra
+        const { channel, bin, last4, exp_month, exp_year, card_type } =
+          authorization;
+        const extra = {
+          channel,
+          bin,
+          last4,
+          exp_month,
+          exp_year,
+          card_type,
+        };
 
-          await DepositModel.update_deposit_record_extra(extra, reference);
-        }
+        await DepositModel.update_deposit_record_extra(extra, reference);
       }
     }
   }
