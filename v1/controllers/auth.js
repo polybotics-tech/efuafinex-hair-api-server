@@ -44,7 +44,7 @@ export const AuthController = {
     return;
   },
   revalidate: async (req, res) => {
-    const { user, token } = req?.body;
+    const { user } = req?.body;
 
     if (!user) {
       DefaultHelper.return_error(res, 404, "User not found");
@@ -52,7 +52,7 @@ export const AuthController = {
     }
 
     //if token stored in request body, return data
-    let data = { user: DefaultHelper.hide_user_credentials(user), token };
+    let data = { user: DefaultHelper.hide_user_credentials(user) };
 
     //
     DefaultHelper.return_success(res, 200, "User token validated", data);
