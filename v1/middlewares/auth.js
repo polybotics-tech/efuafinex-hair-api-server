@@ -225,6 +225,7 @@ export const AuthMiddleWare = {
       //attach user_id and user to request body
       req.body.user_id = decoded_user_id;
       req.body.user = token_user;
+      req.body.token = token;
 
       next();
     } catch (error) {
