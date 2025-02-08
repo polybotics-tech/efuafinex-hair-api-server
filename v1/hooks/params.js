@@ -94,7 +94,7 @@ export const ParamsGenerator = {
       let package_type = is_defined ? "defined" : "free";
       target_amount = is_defined ? Number(target_amount || 0) : 0;
       let available_amount = Number(0);
-      auto_complete = Boolean(auto_complete === "true");
+      auto_complete = is_defined ? Boolean(auto_complete === "true") : false;
       fixed_deadline = Boolean(fixed_deadline === "true");
       duration = !duration ? 0 : Number(duration?.split("months")[0]);
       deadline = fixed_deadline

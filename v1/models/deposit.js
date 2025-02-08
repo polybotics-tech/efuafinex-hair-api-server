@@ -93,7 +93,7 @@ export const DepositModel = {
       filter = ` && status = '${sort}'`;
     }
 
-    const sql = `SELECT * FROM ${db_tables.deposits} WHERE user_id = ?${filter} LIMIT ${offset}, ${config.pageLimit}`;
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE user_id = ?${filter} ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);
@@ -129,7 +129,7 @@ export const DepositModel = {
   fetch_package_deposits: async (package_id, page = 1) => {
     const offset = DefaultHelper.get_offset(page);
 
-    const sql = `SELECT * FROM ${db_tables.deposits} WHERE package_id = ? LIMIT ${offset}, ${config.pageLimit}`;
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE package_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [package_id];
 
     const rows = await DB.read(sql, params);
