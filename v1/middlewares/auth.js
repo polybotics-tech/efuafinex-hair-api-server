@@ -5,6 +5,8 @@ import { FormValidator } from "./validator.js";
 import { Tokenizer } from "../hooks/tokenizer.js";
 import { config } from "../../config.js";
 import { FileManagerUtility } from "../utils/file_manager.js";
+import { IdGenerator } from "../utils/id_generator.js";
+import { FormatDateTime } from "../utils/datetime.js";
 
 export const AuthMiddleWare = {
   validate_login_form: async (req, res, next) => {
@@ -26,6 +28,48 @@ export const AuthMiddleWare = {
 
     //validate request
     const { error, value } = FormValidator.register(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
+  validate_forgot_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.forgot_pass(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
+  validate_reset_pass_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.reset_pass(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
+  validate_otp_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.otp_verification(form);
 
     // return if error
     if (error) {
@@ -67,6 +111,22 @@ export const AuthMiddleWare = {
         "Access denied. Invalid credentials",
         { email }
       );
+      return;
+    }
+
+    req.body.user = userFound;
+    next();
+  },
+  find_user_by_user_id: async (req, res, next) => {
+    let { user_id } = req?.body;
+
+    //check if user_id exist for user
+    const userFound = await UserModel.fetch_user_by_user_id(user_id);
+
+    if (!userFound) {
+      DefaultHelper.return_error(res, 404, "Access denied. User not found", {
+        user_id,
+      });
       return;
     }
 
@@ -152,6 +212,94 @@ export const AuthMiddleWare = {
 
     req.body.token = new_token;
 
+    next();
+  },
+  generate_and_update_otp: async (req, res, next) => {
+    const { user } = req?.body;
+    const { user_id } = user;
+
+    if (!user_id) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Access denied. Invalid authentication credentials"
+      );
+      return;
+    }
+
+    let new_otp;
+
+    //check if otp exists for user
+    const otp_exist = await UserModel.fetch_otp_by_user_id(user_id);
+
+    //check if created_time is less than 15
+    if (
+      otp_exist &&
+      !FormatDateTime.is_more_than_mins(otp_exist?.created_time, 15)
+    ) {
+      new_otp = otp_exist?.otp;
+    } else {
+      //generate new otp
+      new_otp = IdGenerator.otp;
+    }
+
+    if (!new_otp) {
+      DefaultHelper.return_error(res, 500, "Internal server error has occured");
+      return;
+    }
+
+    //update otp in records on db
+    let otp_updated;
+    if (otp_exist) {
+      otp_updated = await UserModel.update_otp_verification(new_otp, user_id);
+    } else {
+      otp_updated = await UserModel.create_otp_verification(new_otp, user_id);
+    }
+
+    if (!otp_updated) {
+      DefaultHelper.return_error(res, 400, "Unable to generate otp for user");
+      return;
+    }
+
+    req.body.otp = new_otp;
+
+    next();
+  },
+  validate_user_otp: async (req, res, next) => {
+    const { user_id, otp } = req?.body;
+
+    //check if user_id - otp combo exists
+    const otp_exist = await UserModel.fetch_otp_by_user_id(user_id);
+
+    if (!otp_exist) {
+      DefaultHelper.return_error(res, 404, "Access denied. User not found");
+      return;
+    }
+
+    //check if otp still valid
+    if (FormatDateTime.is_more_than_mins(otp_exist?.created_time, 15)) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "One-Time-Password is expired. Request a new one"
+      );
+      return;
+    }
+
+    //check if otp match
+    if (otp != otp_exist?.otp) {
+      DefaultHelper.return_error(
+        res,
+        401,
+        "Invalid One-Time-Password submitted"
+      );
+      return;
+    }
+
+    //update user is_verified
+    const is_verified = await UserModel.update_user_is_verified(user_id);
+
+    req.body.user.is_verified = true;
     next();
   },
   validate_token_authorization: async (req, res, next) => {

@@ -128,4 +128,17 @@ export const DefaultHelper = {
       `${user_id}/${old_name}`
     );
   },
+  format_recipient_emails: (recipients = []) => {
+    let emails = "";
+
+    for (var i = 0; i < recipients?.length; i++) {
+      emails += `${recipients[i]}`;
+
+      if (i != recipients?.length - 1) {
+        emails += ", ";
+      }
+    }
+
+    return String(emails)?.toLowerCase();
+  },
 };

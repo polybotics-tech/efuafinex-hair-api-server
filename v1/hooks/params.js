@@ -26,6 +26,7 @@ export const ParamsGenerator = {
       let thumbnail = "";
       let push_notify = Boolean(true);
       let email_notify = Boolean(true);
+      let is_verified = Boolean(false);
 
       return [
         created_time,
@@ -41,7 +42,14 @@ export const ParamsGenerator = {
         last_seen,
         push_notify,
         email_notify,
+        is_verified,
       ];
+    },
+    update_otp_verification: (otp, user_id) => {
+      let created_time = FormatDateTime.to_database_entry();
+      otp = Number(otp);
+
+      return [created_time, otp, user_id];
     },
     update_pass: (pass, user_id) => {
       let last_updated = FormatDateTime.to_database_entry();
@@ -62,6 +70,11 @@ export const ParamsGenerator = {
       let last_seen = FormatDateTime.to_database_entry();
 
       return [last_seen, user_id];
+    },
+    update_is_verified: (user_id) => {
+      let is_verified = Boolean(true);
+
+      return [is_verified, user_id];
     },
     update_thumbnail: (thumbnail, user_id) => {
       let last_updated = FormatDateTime.to_database_entry();

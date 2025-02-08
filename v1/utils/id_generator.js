@@ -99,4 +99,5 @@ export const IdGenerator = {
       random_num(5, 10)
     )}${dt.getTime()}${random_num(10, 99)}.${ext}`;
   },
+  otp: random_num(100000, 999999),
 };

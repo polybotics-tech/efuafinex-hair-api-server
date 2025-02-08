@@ -31,6 +31,22 @@ These endpoints handle most of the authentication activities, like registering a
 
 `/auth/register/` - POST - _json{ email, fullname, phone, pass, confirm_pass }_
 
+#### Generate OTP For Email Verification
+
+`auth/verify/` - POST - _json{ user_id }_
+
+#### Verify OTP
+
+`auth/otp/` - POST - _json{ otp, user_id }_
+
+#### Verify Email From Forgot Password Request
+
+`auth/forgot/` - POST - _json{ email }_
+
+#### Reset Password From Forgot Password
+
+`auth/reset/` - PUT - _json{ new_pass, confirm_pass }_ - **(token required)**
+
 #### Re-validate User Token
 
 `/auth/revalidate` - GET - **(token required)**

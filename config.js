@@ -49,6 +49,14 @@ export const config = {
     imageResourceDir: "/media/photos/",
     uploadedAssetDir: path.join(__dirname, "/uploads/"),
   },
+  email: {
+    server: process.env.VCN_MAIL_SERVER,
+    account: process.env.VCN_EMAIL_ACCOUNT,
+    password: process.env.VCN_EMAIL_PASSWORD,
+    support: "support@votecity.ng",
+    website: "https://www.votecity.ng",
+    title: "EFUAFINIX HAIR",
+  },
   pageLimit: 20, //20
   tokenSecretKey: process.env.EFH_TOKEN_SECRET_KEY,
   tokenAuthorizationKey: process.env.EFH_TOKEN_AUTH_KEY,

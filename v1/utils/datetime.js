@@ -27,4 +27,19 @@ export const FormatDateTime = {
       return false;
     }
   },
+  is_more_than_mins: (datetime = "", mins = 1) => {
+    const dt = new Date(datetime);
+    const now = new Date();
+
+    const mil = Number(60000);
+    const min_con = Number(mil * mins);
+
+    const diff = Number(now - dt);
+
+    if (diff > min_con) {
+      return true;
+    } else {
+      return false;
+    }
+  },
 };
