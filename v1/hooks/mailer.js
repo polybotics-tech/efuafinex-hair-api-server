@@ -32,6 +32,7 @@ const transporter = nodemailer.createTransport({
     user: config?.email?.account,
     pass: config?.email?.password,
   },
+  from: config?.email?.account,
 });
 
 //configure mail options
