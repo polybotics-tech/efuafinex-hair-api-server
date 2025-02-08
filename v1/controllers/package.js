@@ -88,7 +88,7 @@ export const PackageController = {
       return;
     }
 
-    DefaultHelper.return_success(res, 200, "Packaged successfully closed");
+    DefaultHelper.return_success(res, 200, "Package was successfully closed");
     return;
   },
 };
