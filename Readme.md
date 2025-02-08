@@ -75,6 +75,10 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 
 `/deposit/:package_id` - POST - _json{ amount }_ - **(token required)**
 
+#### Verify Transaction Ref
+
+`/deposit/verify/:transaction_ref` - GET - **(token required)**
+
 #### Fetch Deposit Record Details
 
 `/deposit/:transaction_ref` - GET - **(token required)**

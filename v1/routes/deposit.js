@@ -36,6 +36,16 @@ depositRouter.get(
 //webhook to recieve deposits from paystack
 depositRouter.post("/paystack/webhook", DepositController.handle_webhook);
 
+//verify transaction reference
+depositRouter.get(
+  "/verify/:transaction_ref",
+  DepositMiddleware.validate_transaction_reference_params,
+  AuthMiddleWare.validate_token_authorization,
+  DepositMiddleware.validate_deposit_ownership,
+  DepositMiddleware.verify_transaction_ref_with_paystack,
+  DepositController.fetch_single_record
+);
+
 //deposit fund for a package
 depositRouter.post(
   "/:package_id",

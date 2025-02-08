@@ -1,5 +1,6 @@
 import { API_REQUESTS } from "../hooks/api/requests.js";
 import { DepositModel } from "../models/deposit.js";
+import { DepositEvent } from "../subscribers/deposit.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { FormValidator } from "./validator.js";
 
@@ -108,7 +109,7 @@ export const DepositMiddleware = {
     }
   },
   validate_transaction_reference_query: async (req, res, next) => {
-    //grab the package id
+    //grab the  transaction ref
     const { reference } = req?.query;
 
     //fetch deposit record
@@ -128,7 +129,7 @@ export const DepositMiddleware = {
     next();
   },
   validate_transaction_reference_params: async (req, res, next) => {
-    //grab the package id
+    //grab the transaction ref
     const { transaction_ref } = req?.params;
 
     //fetch deposit record
@@ -230,6 +231,27 @@ export const DepositMiddleware = {
         error?.message || "Internal server error occured"
       );
       return;
+    }
+  },
+  verify_transaction_ref_with_paystack: async (req, res, next) => {
+    const { reference, deposit_record } = req?.body;
+
+    //send request to paystack to verify transaction
+    const verify_response = await API_REQUESTS.Paystack.verify_transaction(
+      reference
+    );
+
+    if (verify_response) {
+      let data = {
+        reference,
+        deposit_record,
+      };
+
+      DepositEvent.emit("update-status", { data });
+
+      next();
+    } else {
+      DefaultHelper.return_error(res, 404, "Unable to verify transaction");
     }
   },
 };
