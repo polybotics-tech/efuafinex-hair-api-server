@@ -5,7 +5,7 @@ import { ParamsGenerator } from "../hooks/params.js";
 
 export const UserModel = {
   create_user: async (form) => {
-    const sql = `INSERT INTO ${db_tables.users} (created_time, user_id, user_name, fullname, email, phone, pass, auth_token, thumbnail, last_updated, last_seen, push_notify, email_notify, is_verified) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO ${db_tables.users} (created_time, user_id, user_name, fullname, email, phone, pass, auth_token, thumbnail, thumbnail_blur, last_updated, last_seen, push_notify, email_notify, is_verified) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     const params = ParamsGenerator.user.create_new_user(form);
 
     //attempt save to db
@@ -138,9 +138,13 @@ export const UserModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
-  update_user_thumbnail: async (thumbnail, user_id) => {
-    const sql = `UPDATE ${db_tables.users} SET last_updated=?, last_seen=?, thumbnail=? WHERE user_id=? LIMIT 1`;
-    const params = ParamsGenerator.user.update_thumbnail(thumbnail, user_id);
+  update_user_thumbnail: async (thumbnail, thumbnail_blur, user_id) => {
+    const sql = `UPDATE ${db_tables.users} SET last_updated=?, last_seen=?, thumbnail=?, thumbnail_blur=? WHERE user_id=? LIMIT 1`;
+    const params = ParamsGenerator.user.update_thumbnail(
+      thumbnail,
+      thumbnail_blur,
+      user_id
+    );
 
     //attempt to update db
     const attempt_to_update = await DB.update(sql, params);

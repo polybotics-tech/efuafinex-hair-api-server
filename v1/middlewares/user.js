@@ -102,12 +102,13 @@ export const UserMiddleware = {
   },
   store_new_user_thumbnail: async (req, res, next) => {
     try {
-      const { user_id, user, upload_url } = req?.body;
+      const { user_id, user, upload_url, upload_blur } = req?.body;
       const { thumbnail } = user;
 
       //attempt to update user thumbnail
       const updated = await UserModel.update_user_thumbnail(
         upload_url,
+        upload_blur,
         user_id
       );
 

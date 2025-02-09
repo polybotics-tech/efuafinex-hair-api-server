@@ -4,7 +4,6 @@ import { DefaultHelper } from "../utils/helpers.js";
 import { FormValidator } from "./validator.js";
 import { Tokenizer } from "../hooks/tokenizer.js";
 import { config } from "../../config.js";
-import { FileManagerUtility } from "../utils/file_manager.js";
 import { IdGenerator } from "../utils/id_generator.js";
 import { FormatDateTime } from "../utils/datetime.js";
 
@@ -308,11 +307,6 @@ export const AuthMiddleWare = {
 
     try {
       if (!req.headers || !req.headers.authorization) {
-        //check if any file was upload, and delete if any
-        if (req?.file || req?.file?.path) {
-          await FileManagerUtility.delete_file_by_path(req?.file?.path);
-        }
-
         DefaultHelper.return_error(res, 403, message);
         return;
       }
@@ -322,11 +316,6 @@ export const AuthMiddleWare = {
       const token = req.headers?.authorization.split(" ")[1];
 
       if (tokenKey !== config.tokenAuthorizationKey || !token) {
-        //check if any file was upload, and delete if any
-        if (req?.file || req?.file?.path) {
-          await FileManagerUtility.delete_file_by_path(req?.file?.path);
-        }
-
         DefaultHelper.return_error(res, 403, message);
         return;
       }
@@ -334,11 +323,6 @@ export const AuthMiddleWare = {
       //get the user_id from the decoded token
       const decoded_token = Tokenizer.decode_token(token);
       if (!decoded_token || !decoded_token?.user_id) {
-        //check if any file was upload, and delete if any
-        if (req?.file || req?.file?.path) {
-          await FileManagerUtility.delete_file_by_path(req?.file?.path);
-        }
-
         DefaultHelper.return_error(res, 401, message);
         return;
       }
@@ -350,22 +334,12 @@ export const AuthMiddleWare = {
       const token_user = await UserModel.fetch_user_by_auth_token(token);
 
       if (!token_user) {
-        //check if any file was upload, and delete if any
-        if (req?.file || req?.file?.path) {
-          await FileManagerUtility.delete_file_by_path(req?.file?.path);
-        }
-
         DefaultHelper.return_error(res, 404, umessage);
         return;
       }
 
       //compare user ids
       if (decoded_user_id != token_user?.user_id) {
-        //check if any file was upload, and delete if any
-        if (req?.file || req?.file?.path) {
-          await FileManagerUtility.delete_file_by_path(req?.file?.path);
-        }
-
         DefaultHelper.return_error(res, 401, message);
         return;
       }
@@ -376,11 +350,6 @@ export const AuthMiddleWare = {
 
       next();
     } catch (error) {
-      //check if any file was upload, and delete if any
-      if (req?.file || req?.file?.path) {
-        await FileManagerUtility.delete_file_by_path(req?.file?.path);
-      }
-
       DefaultHelper.return_error(res, 401, message);
       return;
     }

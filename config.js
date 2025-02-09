@@ -48,6 +48,10 @@ export const config = {
     imageUploadDir: path.join(__dirname, "/uploads/photos/"),
     imageResourceDir: "/media/photos/",
     uploadedAssetDir: path.join(__dirname, "/uploads/"),
+    blur: {
+      componentX: 4,
+      componentY: 3,
+    },
   },
   email: {
     server: process.env.VCN_MAIL_SERVER,

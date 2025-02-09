@@ -1,25 +1,18 @@
 import e from "express";
 import multer from "multer";
+import sharp from "sharp";
+import { encode } from "blurhash";
 
 import { config } from "../../config.js";
 import { IdGenerator } from "../utils/id_generator.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { FileManagerUtility } from "../utils/file_manager.js";
 
-//initiate storages for multer
-const photo_upload_storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, config.fileUpload.tmpUploadDir);
-  },
-  filename: function (req, file, cb) {
-    const new_file_name = IdGenerator.photo_upload_name(file);
-
-    cb(null, new_file_name);
-  },
-});
+// set up multer storage (temporary memory storage to access buffer)
+const storage = multer.memoryStorage();
 
 const single_upload = multer({
-  storage: photo_upload_storage,
+  storage: storage,
   limits: { fileSize: config.fileUpload.sizeLimit },
 }).single("file");
 
@@ -48,10 +41,11 @@ export const UploadMiddleWare = {
     });
   },
   validate_single_image_uploaded: async (req, res, next) => {
-    const { user_id } = req?.body;
+    const { body, file } = req;
+    const { user_id } = body;
 
     //check wether a file was passed
-    if (!req?.file || !user_id) {
+    if (!file || !user_id) {
       return DefaultHelper.return_error(
         res,
         400,
@@ -59,68 +53,90 @@ export const UploadMiddleWare = {
       );
     }
 
-    //reading the media file sent
-    const media_file = req?.file;
-
-    const media_tmp_mimetype = media_file?.mimetype;
-    const media_tmp_path = media_file?.path;
-    const media_tmp_file_name = media_file?.filename;
-    const media_tmp_size = media_file?.size;
-
-    //extract file type
-    const allowed_type = ["png", "jpg", "jpeg"];
-    const file_mime = media_tmp_mimetype.split("/")[0];
-    const file_type = media_tmp_mimetype.split("/")[1];
+    // get file params
+    const file_buffer = file.buffer;
+    const file_mimetype = file?.mimetype;
+    const file_initial_name = file?.filename;
+    const file_size = file?.size;
 
     //check file type
-    if (file_mime != "image" || !allowed_type.includes(file_type)) {
-      //attempt to delete tmp file
-      let del = await FileManagerUtility.delete_file_by_path(media_tmp_path);
-
-      return return_error(
+    if (!FileManagerUtility.file_type_allowed(file_mimetype)) {
+      return DefaultHelper.return_error(
         res,
         403,
         "Media upload failed. Unsupported media file type",
         {
-          fileName: media_tmp_file_name,
-          fileType: file_type,
+          fileName: file_initial_name,
+          fileMimeType: file_mimetype,
         }
       );
     }
 
     //check file size
-    if (parseInt(media_tmp_size) >= parseInt(config.fileUpload.sizeLimit)) {
-      //attempt to delete tmp file
-      let del = await FileManagerUtility.delete_file_by_path(media_tmp_path);
-
-      return return_error(
+    if (await FileManagerUtility.file_size_exceeds_limit(file_size)) {
+      return DefaultHelper.return_error(
         res,
         413,
         `Media upload failed. file exceeds the ${DefaultHelper.format_size_to_readable(
           config.fileUpload.sizeLimit
         )} upload size limit`,
         {
-          fileName: media_tmp_file_name,
-          fileSize: DefaultHelper.format_size_to_readable(media_tmp_size),
+          fileName: file_initial_name,
+          fileSize: DefaultHelper.format_size_to_readable(file_size),
         }
       );
     }
 
-    //move uploaded tmp file to user folder in upload directory
-    let new_path = DefaultHelper.return_new_tmp_path(
-      user_id,
-      media_tmp_file_name
-    );
-    const dynamicFolder = `${config.fileUpload.imageUploadDir}${user_id}/`;
-    await FileManagerUtility.move_uploaded_asset(
-      media_tmp_path,
-      new_path,
-      dynamicFolder
+    //resize file with sharp
+    const optimized_buffer = await sharp(file_buffer)
+      .jpeg()
+      .resize({
+        width: 1280,
+        height: 1280,
+      })
+      .toBuffer();
+
+    //save uploaded file to user folder in upload directory
+    let saved_file = await FileManagerUtility.save_uploaded_file_to_path(
+      optimized_buffer,
+      user_id
     );
 
+    //check file saved
+    if (!saved_file) {
+      return DefaultHelper.return_error(
+        res,
+        401,
+        "Media upload failed. Error saving file to storage"
+      );
+    }
+
     //store upload url
-    const upload_url = `${config.fileUpload.imageResourceDir}${user_id}/${media_tmp_file_name}`;
+    const upload_url = `${config.fileUpload.imageResourceDir}${user_id}/${saved_file}`;
+
+    //-- create blur for uploaded photo optimization
+    // specify number of components in each axes.
+    const componentX = config.fileUpload.blur.componentX;
+    const componentY = config.fileUpload.blur.componentY;
+
+    // converting provided image to a byte buffer.
+    const { data, info } = await sharp(optimized_buffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({
+        resolveWithObject: true,
+      });
+
+    const upload_blur = encode(
+      new Uint8ClampedArray(data),
+      info.width,
+      info.height,
+      componentX,
+      componentY
+    );
+
     req.body.upload_url = upload_url;
+    req.body.upload_blur = upload_blur;
 
     next();
   },

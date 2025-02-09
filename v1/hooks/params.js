@@ -24,6 +24,7 @@ export const ParamsGenerator = {
       let user_name = IdGenerator.user_name(fullname?.split(" ")[0]);
       let auth_token = "";
       let thumbnail = "";
+      let thumbnail_blur = "";
       let push_notify = Boolean(true);
       let email_notify = Boolean(true);
       let is_verified = Boolean(false);
@@ -38,6 +39,7 @@ export const ParamsGenerator = {
         pass,
         auth_token,
         thumbnail,
+        thumbnail_blur,
         last_updated,
         last_seen,
         push_notify,
@@ -76,12 +78,13 @@ export const ParamsGenerator = {
 
       return [is_verified, user_id];
     },
-    update_thumbnail: (thumbnail, user_id) => {
+    update_thumbnail: (thumbnail, thumbnail_blur, user_id) => {
       let last_updated = FormatDateTime.to_database_entry();
       let last_seen = FormatDateTime.to_database_entry();
-      thumbnail = `${thumbnail}`;
+      thumbnail = String(thumbnail);
+      thumbnail_blur = String(thumbnail_blur);
 
-      return [last_updated, last_seen, thumbnail, user_id];
+      return [last_updated, last_seen, thumbnail, thumbnail_blur, user_id];
     },
   },
   package: {

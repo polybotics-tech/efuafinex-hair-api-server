@@ -14,6 +14,7 @@
   "dependencies": {
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
+    "blurhash": "^2.0.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
@@ -24,6 +25,7 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.12.0",
     "node-file-logger": "^0.9.5",
-    "nodemailer": "^6.10.0"
+    "nodemailer": "^6.10.0",
+    "sharp": "^0.33.5"
   }
 }

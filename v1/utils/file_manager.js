@@ -1,6 +1,8 @@
 import fs from "fs";
+import path from "path";
 import { config } from "../../config.js";
 import { logbot } from "../../logger.js";
+import { IdGenerator } from "./id_generator.js";
 
 //check if file exists
 const does_file_exists = async (file_path) => {
@@ -14,6 +16,20 @@ const does_file_exists = async (file_path) => {
 };
 
 export const FileManagerUtility = {
+  file_type_allowed: async (mimetype) => {
+    //extract file type
+    const allowed_type = ["png", "jpg", "jpeg"];
+    const file_mime = mimetype.split("/")[0];
+    const file_type = mimetype.split("/")[1];
+
+    return Boolean(file_mime === "image" && allowed_type.includes(file_type));
+  },
+  file_size_exceeds_limit: async (size) => {
+    const limit = config.fileUpload.sizeLimit;
+    let exceeds = Boolean(Number(size) >= Number(limit));
+
+    return exceeds;
+  },
   delete_uploaded_asset: async (url) => {
     let file_path = "";
 
@@ -58,88 +74,24 @@ export const FileManagerUtility = {
 
     return true;
   },
-  delete_file_by_path: async (file_path) => {
-    //check if file exists
-    let file_exists = await does_file_exists(file_path);
-    if (!file_exists) {
+  save_uploaded_file_to_path: async (buffer, user_id) => {
+    // check and make upload directory
+    const uploadDir = path.join(config.fileUpload.imageUploadDir, user_id);
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // generate unique filename
+    const fileName = IdGenerator.photo_upload_name();
+    const filePath = path.join(uploadDir, fileName);
+
+    // Save file to directory
+    if (buffer) {
+      fs.writeFileSync(filePath, buffer);
+      return fileName;
+    } else {
       return false;
-    }
-
-    //proceed to delete existing file
-    fs.unlink(file_path, (err) => {
-      if (err) {
-        logbot.Error(
-          `File Deletion failed - ${JSON.stringify({
-            message: "File could not be deleted from designated path",
-            errMsg: err,
-            meta: { file: file_path },
-          })}`
-        );
-        return false;
-      }
-
-      //file deleted
-      logbot.Info(
-        `File Deletion successful - ${JSON.stringify({
-          message: "File has been deleted from designated path",
-          meta: { file: file_path },
-        })}`
-      );
-      return true;
-    });
-
-    return true;
-  },
-  move_uploaded_asset: async (
-    oldPath,
-    newPath,
-    dynamicFolder,
-    callback = (err) => {
-      console.log("move err: ", err);
-    }
-  ) => {
-    try {
-      // Ensure the destination folder exists
-      if (!fs.existsSync(dynamicFolder)) {
-        fs.mkdirSync(dynamicFolder, { recursive: true }); // Creates the folder if it doesn't exist
-      }
-
-      setTimeout(() => {
-        fs.rename(oldPath, newPath, function (err) {
-          if (err) {
-            if (err.code === "EXDEV" || err.code === "ENOENT") {
-              rewrite();
-            } else {
-              logbot.Error(
-                `Temp File Move failed - ${JSON.stringify({
-                  message: "Tmp file could not be moved to designated path",
-                  errMsg: err,
-                  meta: { oldPath, newPath },
-                })}`
-              );
-            }
-            return;
-          }
-          //callback();
-        });
-
-        function rewrite() {
-          var readStream = fs.createReadStream(oldPath);
-          var writeStream = fs.createWriteStream(newPath);
-
-          readStream.on("error", callback);
-          writeStream.on("error", callback);
-
-          readStream.on("close", function () {
-            fs.unlink(oldPath, callback);
-          });
-
-          readStream.pipe(writeStream);
-        }
-      }, 2000);
-      //
-    } catch (error) {
-      logbot.Error(`Temp File Move failed - from catch - ${error?.message}`);
     }
   },
 };
