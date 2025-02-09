@@ -53,6 +53,14 @@ export const ParamsGenerator = {
 
       return [created_time, otp, user_id];
     },
+    update_data: (fullname, phone, user_id) => {
+      let last_updated = FormatDateTime.to_database_entry();
+      let last_seen = FormatDateTime.to_database_entry();
+      fullname = String(fullname);
+      phone = String(phone);
+
+      return [last_updated, last_seen, fullname, phone, user_id];
+    },
     update_pass: (pass, user_id) => {
       let last_updated = FormatDateTime.to_database_entry();
       let last_seen = FormatDateTime.to_database_entry();

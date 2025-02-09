@@ -55,6 +55,10 @@ These endpoints handle most of the authentication activities, like registering a
 
 The _/user/_ endpoints are mainly used to update user details and preferences. However, a used must have already gotten an _access token_ from any of the _/auth/_ endpoints, before operations can be allowed.
 
+#### Update User Account
+
+`/user/account/` - PUT - _json{ fullname, phone }_ - **(token required)**
+
 #### Update User Password
 
 `/user/pass/` - PUT - _json{ pass, new_pass, confirm_pass }_ - **(token required)**

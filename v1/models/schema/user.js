@@ -1,9 +1,20 @@
 import Joi from "joi";
 
 export const UserSchema = {
+  update_account: Joi.object({
+    fullname: Joi.string().min(3).required().messages({
+      "any.required": "Please provide a legal full name",
+      "string.empty": "Please provide a legal full name",
+      "string.min": "Please provide a legal full name",
+    }),
+    phone: Joi.number().required().messages({
+      "any.required": "Please provide a valid phone number",
+    }),
+  }),
   update_pass: Joi.object({
     pass: Joi.string().required().messages({
-      "any.required": "Please provide the account's current password",
+      "any.required": "Please provide your account's current password",
+      "string.empty": "Please provide your account's current password",
     }),
     new_pass: Joi.string()
       .regex(
@@ -14,6 +25,7 @@ export const UserSchema = {
       .required()
       .messages({
         "any.required": "Please provide a new password",
+        "string.empty": "Please provide a new password",
         "string.min":
           "New password is too short, must be atleast 8 characters long",
         "string.max":

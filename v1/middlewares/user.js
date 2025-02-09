@@ -6,6 +6,20 @@ import { config } from "../../config.js";
 import { FileManagerUtility } from "../utils/file_manager.js";
 
 export const UserMiddleware = {
+  validate_update_account_form: async (req, res, next) => {
+    let form = req?.body;
+
+    //validate request
+    const { error, value } = FormValidator.update_account(form);
+
+    // return if error
+    if (error) {
+      DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+      return;
+    }
+
+    next();
+  },
   validate_update_pass_form: async (req, res, next) => {
     let form = req?.body;
 
@@ -60,6 +74,27 @@ export const UserMiddleware = {
     }
 
     req.body.user = userFound;
+    next();
+  },
+  store_updated_user_data: async (req, res, next) => {
+    const { fullname, phone, user_id } = req?.body;
+    //
+    const account_updated = UserModel.update_user_data(
+      fullname,
+      phone,
+      user_id
+    );
+
+    if (!account_updated) {
+      DefaultHelper.return_error(res, 400, "Error updating account details");
+      return;
+    }
+
+    //fetch updated user
+    const updatedUser = await UserModel.fetch_user_by_user_id(user_id);
+
+    req.body.user = updatedUser;
+    //done updating account
     next();
   },
   store_new_user_pass: async (req, res, next) => {

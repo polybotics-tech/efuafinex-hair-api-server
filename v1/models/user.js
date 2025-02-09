@@ -102,6 +102,14 @@ export const UserModel = {
 
     return deleted;
   },
+  update_user_data: async (fullname, phone, user_id) => {
+    const sql = `UPDATE ${db_tables.users} SET last_updated=?, last_seen=?, fullname=?, phone=? WHERE user_id=? LIMIT 1`;
+    const params = ParamsGenerator.user.update_data(fullname, phone, user_id);
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
   update_user_pass: async (pass, user_id) => {
     const sql = `UPDATE ${db_tables.users} SET last_updated=?, last_seen=?, pass=? WHERE user_id=? LIMIT 1`;
     const params = ParamsGenerator.user.update_pass(pass, user_id);

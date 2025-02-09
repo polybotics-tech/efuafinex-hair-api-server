@@ -11,6 +11,7 @@ export const FormValidator = {
   forgot_pass: validator(AuthSchema.forgot_pass),
   reset_pass: validator(AuthSchema.reset_pass),
   otp_verification: validator(AuthSchema.otp_verification),
+  update_account: validator(UserSchema.update_account),
   update_pass: validator(UserSchema.update_pass),
   update_notify: validator(UserSchema.update_notify),
   create_package: validator(PackageSchema.create_package),

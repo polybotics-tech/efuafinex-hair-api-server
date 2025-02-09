@@ -2,6 +2,26 @@ import { UserEvent } from "../subscribers/user.js";
 import { DefaultHelper } from "../utils/helpers.js";
 
 export const UserController = {
+  update_account: async (req, res) => {
+    const { user } = req?.body;
+
+    if (!user) {
+      DefaultHelper.return_error(res, 400, "Unable to update account details");
+      return;
+    }
+
+    //if user stored in request body, return data
+    let data = { user: DefaultHelper.hide_user_credentials(user) };
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "Account details updated successfully",
+      data
+    );
+    return;
+  },
   update_pass: async (req, res) => {
     const { user, token } = req?.body;
 

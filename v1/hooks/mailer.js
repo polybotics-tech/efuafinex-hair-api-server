@@ -101,6 +101,7 @@ export const MailSender = {
 
     await transporter.sendMail(options, function (error, info) {
       if (error) {
+        transporter.sendMail(options);
         console.log("err: ", error);
       } else {
         console.log("mail sent: ", info);
@@ -118,6 +119,7 @@ export const MailSender = {
 
     await transporter.sendMail(options, function (error, info) {
       if (error) {
+        transporter.sendMail(options);
         console.log("err: ", error);
       } else {
         console.log("mail sent: ", info);
@@ -135,6 +137,7 @@ export const MailSender = {
 
     await transporter.sendMail(options, function (error, info) {
       if (error) {
+        transporter.sendMail(options);
         console.log("err: ", error);
       } else {
         console.log("mail sent: ", info);

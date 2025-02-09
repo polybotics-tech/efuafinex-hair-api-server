@@ -11,6 +11,15 @@ userRouter.get("/", (req, res) => {
   res.status(200).json({ success: true, message: "User route" });
 });
 
+//update user account
+userRouter.put(
+  "/account",
+  UserMiddleware.validate_update_account_form,
+  AuthMiddleWare.validate_token_authorization,
+  UserMiddleware.store_updated_user_data,
+  UserController.update_account
+);
+
 //update user password
 userRouter.put(
   "/pass",
