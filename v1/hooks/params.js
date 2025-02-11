@@ -128,8 +128,8 @@ export const ParamsGenerator = {
             FormatDateTime.to_future_deadline_from_duration(duration)
           );
       has_photo = is_defined ? Boolean(has_photo === "true") : false;
-      let photo = has_photo ? upload_url : "";
-      let photo_blur = has_photo ? upload_blur : "";
+      let photo = has_photo ? form?.upload_url : "";
+      let photo_blur = has_photo ? form?.upload_blur : "";
       let status = "in-progress";
 
       return [

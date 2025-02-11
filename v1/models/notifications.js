@@ -27,6 +27,10 @@ export const NotificationModel = {
 
     const data = DefaultHelper.empty_or_rows(rows);
 
+    for (let x = 0; x < data.length; x++) {
+      data[x].extra = JSON.parse(data[x]?.extra);
+    }
+
     return data;
   },
   count_all_user_notifications: async (user_id) => {
@@ -50,6 +54,10 @@ export const NotificationModel = {
     const rows = await DB.read(sql);
 
     const data = DefaultHelper.empty_or_rows(rows);
+
+    for (let x = 0; x < data.length; x++) {
+      data[x].extra = JSON.parse(data[x]?.extra);
+    }
 
     return data;
   },
