@@ -8,5 +8,7 @@ UserEvent.on("password-changed", async (args) => {
   const { user } = data;
 
   //send confirmation email to user
-  await MailSender.password_changed(user);
+  if (user?.email_notify) {
+    await MailSender.password_changed(user);
+  }
 });

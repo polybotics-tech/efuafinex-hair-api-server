@@ -6,7 +6,7 @@ import { DefaultHelper } from "../utils/helpers.js";
 
 export const PackageModel = {
   create_package: async (form) => {
-    const sql = `INSERT INTO ${db_tables.packages} (created_time, package_id, user_id, title, description, package_type, target_amount, available_amount, auto_complete, fixed_deadline, deadline, has_photo, photo, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO ${db_tables.packages} (created_time, package_id, user_id, title, description, package_type, target_amount, available_amount, auto_complete, fixed_deadline, deadline, has_photo, photo, photo_blur, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     const params = ParamsGenerator.package.create_new_package(form);
 
     //attempt save to db
@@ -40,7 +40,7 @@ export const PackageModel = {
   fetch_user_packages: async (user_id, page = 1) => {
     const offset = DefaultHelper.get_offset(page);
 
-    const sql = `SELECT * FROM ${db_tables.packages} WHERE user_id = ? LIMIT ${offset}, ${config.pageLimit}`;
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);

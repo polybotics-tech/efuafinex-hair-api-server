@@ -5,8 +5,11 @@ export const AuthEvent = new EventEmitter();
 
 //--auth event listeners
 AuthEvent.on("register", async (args) => {
-  console.log("event register: ", args);
-  // do stuff
+  const { data } = args;
+  const { user } = data;
+
+  //send welcome email to user
+  await MailSender.registration_success(user);
 });
 
 AuthEvent.on("otp-generated", async (args) => {

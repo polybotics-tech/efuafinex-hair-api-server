@@ -4,6 +4,8 @@ import { AuthMiddleWare } from "../middlewares/auth.js";
 import { UserMiddleware } from "../middlewares/user.js";
 import { UserController } from "../controllers/user.js";
 import { UploadMiddleWare } from "../middlewares/upload.js";
+import { NotificationMiddleware } from "../middlewares/notifications.js";
+import { NotificationController } from "../controllers/notifications.js";
 
 export const userRouter = e.Router();
 
@@ -49,4 +51,13 @@ userRouter.put(
   UploadMiddleWare.validate_single_image_uploaded,
   UserMiddleware.store_new_user_thumbnail,
   UserController.update_thumbnail
+);
+
+//fetch user notifications
+userRouter.get(
+  "/notifications",
+  AuthMiddleWare.validate_token_authorization,
+  AuthMiddleWare.integrate_pagination_query,
+  NotificationMiddleware.fetch_user_notifications,
+  NotificationController.fetch_notifications
 );

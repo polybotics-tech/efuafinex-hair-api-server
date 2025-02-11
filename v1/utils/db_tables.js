@@ -7,4 +7,6 @@ export const db_tables = {
   otp_verifications: `${prefix}otp_verifications`,
   packages: `${prefix}packages`,
   deposits: `${prefix}deposits`,
+  faqs: `${prefix}faqs`,
+  notifications: `${prefix}notifications`,
 };

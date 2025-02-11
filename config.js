@@ -59,7 +59,7 @@ export const config = {
     password: process.env.VCN_EMAIL_PASSWORD,
     support: "support@votecity.ng",
     website: "https://www.votecity.ng",
-    title: "EFUAFINIX HAIR",
+    title: "EFUAFINEX HAIR",
   },
   pageLimit: 20, //20
   tokenSecretKey: process.env.EFH_TOKEN_SECRET_KEY,

@@ -113,8 +113,9 @@ export const ParamsGenerator = {
       let created_time = FormatDateTime.to_database_entry();
       let package_id = IdGenerator.package_id;
       user_id = String(user_id);
-      title = String(title);
+      title = String(title)?.toLowerCase();
       description = String(description);
+      is_defined = Boolean(is_defined);
       let package_type = is_defined ? "defined" : "free";
       target_amount = is_defined ? Number(target_amount || 0) : 0;
       let available_amount = Number(0);
@@ -126,8 +127,9 @@ export const ParamsGenerator = {
         : FormatDateTime.to_database_entry(
             FormatDateTime.to_future_deadline_from_duration(duration)
           );
-      has_photo = Boolean(has_photo === "true");
-      let photo = ""; //recheck this later
+      has_photo = is_defined ? Boolean(has_photo === "true") : false;
+      let photo = has_photo ? upload_url : "";
+      let photo_blur = has_photo ? upload_blur : "";
       let status = "in-progress";
 
       return [
@@ -144,6 +146,7 @@ export const ParamsGenerator = {
         deadline,
         has_photo,
         photo,
+        photo_blur,
         status,
       ];
     },
@@ -215,6 +218,61 @@ export const ParamsGenerator = {
       extra = JSON.stringify(extra);
 
       return [extra, transaction_ref];
+    },
+  },
+  faq: {
+    create_new_faq: (form) => {
+      let { question, answer, tags } = form;
+
+      let created_time = FormatDateTime.to_database_entry();
+      let faq_id = IdGenerator.faq_id;
+      question = String(question)?.toLowerCase();
+      answer = String(answer)?.toLowerCase();
+      tags = String(tags)?.toLowerCase();
+
+      return [created_time, faq_id, question, answer, tags];
+    },
+  },
+  notification: {
+    create_new_notification: (form) => {
+      let { actor_id, notification_type, target_id } = form;
+
+      let created_time = FormatDateTime.to_database_entry();
+      let notification_id = IdGenerator.notification_id;
+      actor_id = String(actor_id)?.toLowerCase();
+      notification_type = String(notification_type)?.toLowerCase();
+      target_id = String(target_id)?.toLowerCase();
+      let extra;
+
+      switch (notification_type) {
+        case "package-created":
+          extra = {
+            package_id: form?.package_id,
+          };
+          break;
+        case "fund-added-to-package":
+          extra = {
+            package_id: form?.package_id,
+            transaction_ref: form?.transaction_ref,
+            amount: form?.amount,
+          };
+          break;
+
+        default:
+          extra = {};
+          break;
+      }
+
+      extra = JSON.stringify(extra);
+
+      return [
+        created_time,
+        notification_id,
+        actor_id,
+        notification_type,
+        target_id,
+        extra,
+      ];
     },
   },
 };

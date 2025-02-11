@@ -8,7 +8,7 @@ var mailGenerator = new Mailgen({
   theme: "default",
   product: {
     // meta data that appears in header & footer of e-mails
-    name: "EFUAFINIX HAIR",
+    name: "EFUAFINEX HAIR",
     link: "https://polybotics.tech/",
     // custom copyright message
     copyright: `Copyright © ${new Date().getFullYear()} EFUAFINIX. All rights reserved.`,
@@ -19,8 +19,8 @@ var mailGenerator = new Mailgen({
 });
 
 const greeting = "Hello";
-const signature = "Yours sincerely";
-const outro = `For any assistance, feel free to contact our support team at ${config?.email?.support}`;
+const signature = "Best Regards";
+const outro = `If you ever need assistance, our support team is here to help. Feel free to reach out at ${config?.email?.support}`;
 const brandTitle = config?.email?.title;
 
 //create transporter
@@ -46,6 +46,18 @@ const MailOptions = async (recipients = [], subject, body) => ({
 
 /////
 export const MailGenerator = {
+  registration_success: (fullname) => ({
+    body: {
+      name: fullname,
+      greeting,
+      signature,
+      intro: [
+        `Welcome to ${brandTitle}. We're excited to have you on board. Your account has been successfully created, and you're now part of our community`,
+        `We're thrilled to have you with us and can't wait for you to experience everything ${brandTitle} has to offer`,
+      ],
+      outro,
+    },
+  }),
   otp_generated: (fullname, otp) => ({
     body: {
       name: fullname,
@@ -66,9 +78,9 @@ export const MailGenerator = {
       greeting,
       signature,
       intro: [
-        "Congratulations! 🎉 Your email has been successfully verified.",
+        "Congratulations!!! Your email has been successfully verified.",
         `You can now enjoy full access to ${brandTitle} and all its amazing features.`,
-        "Thank you for joining us. We are truly happy to welcome aboard! 🚀",
+        "Thank you for joining us. We are truly happy to welcome aboard!!!",
       ],
       outro,
     },
@@ -86,10 +98,73 @@ export const MailGenerator = {
       outro,
     },
   }),
+  package_funded: (
+    fullname,
+    amount,
+    package_id,
+    transaction_ref,
+    package_title
+  ) => ({
+    body: {
+      name: fullname,
+      greeting,
+      signature,
+      intro: [
+        `We're pleased to inform you that your deposit of ₦${amount} for the [->${package_title}<-] package has been successfully processed`,
+        "Your funds have been securely added to your package, and you're on your way to enjoying the benefits of your package",
+        "Along with this confirmation email, we have sent a summary of the processed transaction.",
+      ],
+      table: {
+        data: [
+          {
+            name: "Package Title",
+            value: `${package_title}`,
+          },
+          {
+            name: "Transaction Ref",
+            value: `${transaction_ref}`,
+          },
+          {
+            name: "Package ID",
+            value: `${package_id}`,
+          },
+          {
+            name: "Amount",
+            value: `₦ ${amount}`,
+          },
+        ],
+        columns: {
+          // Optionally, change column text alignment
+          customAlignment: {
+            value: "right",
+          },
+        },
+      },
+      outro,
+    },
+  }),
 };
 /////
 
 export const MailSender = {
+  registration_success: async (user) => {
+    const { fullname, email } = user;
+
+    const options = await MailOptions(
+      [`${email}`],
+      `New Registration Successful`,
+      MailGenerator.registration_success(fullname)
+    );
+
+    await transporter.sendMail(options, function (error, info) {
+      if (error) {
+        transporter.sendMail(options);
+        console.log("err: ", error);
+      } else {
+        console.log("mail sent: ", info);
+      }
+    });
+  },
   otp_generated: async (user, otp) => {
     const { fullname, email } = user;
 
@@ -133,6 +208,36 @@ export const MailSender = {
       [`${email}`],
       "Account Password Updated",
       MailGenerator.password_changed(fullname)
+    );
+
+    await transporter.sendMail(options, function (error, info) {
+      if (error) {
+        transporter.sendMail(options);
+        console.log("err: ", error);
+      } else {
+        console.log("mail sent: ", info);
+      }
+    });
+  },
+  package_funded: async (
+    user,
+    amount,
+    package_id,
+    transaction_ref,
+    package_title
+  ) => {
+    const { fullname, email } = user;
+
+    const options = await MailOptions(
+      [`${email}`],
+      "Deposit Successful - Funds Added To Package",
+      MailGenerator.package_funded(
+        fullname,
+        amount,
+        package_id,
+        transaction_ref,
+        package_title
+      )
     );
 
     await transporter.sendMail(options, function (error, info) {

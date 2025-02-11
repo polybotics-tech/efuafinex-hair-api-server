@@ -100,4 +100,10 @@ export const IdGenerator = {
     )}${dt.getTime()}${random_num(10, 99)}.${ext}`;
   },
   otp: random_num(100000, 999999),
+  faq_id: `FAQs-${random_num(10, 99)}${random_aph(random_num(2, 4))}${parseInt(
+    Number(dt.getTime()) / 1000
+  )}`,
+  notification_id: `NOTICE-${random_num(10, 99)}${random_aph(
+    random_num(2, 4)
+  )}${parseInt(Number(dt.getTime()) / 1000)}`,
 };
