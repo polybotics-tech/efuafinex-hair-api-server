@@ -69,27 +69,33 @@ const random_aph = (count) => {
   return rand_aph;
 };
 
-const dt = new Date();
-
 export const IdGenerator = {
-  user_id: `UID-${random_num(10, 99)}${random_aph(3)}${parseInt(
-    Number(dt.getTime()) / 1000
-  )}`,
+  user_id: () => {
+    const dt = new Date();
+    return `UID-${random_num(10, 99)}${random_aph(3)}${dt.getTime()}`;
+  },
   user_name: (first_name) =>
     `${first_name}-${random_num(10, 999)}${random_aph(
       random_num(2, 4)
     )}${random_num(10, 999)}`,
-  package_id: `PID-${random_num(10, 99)}${random_aph(
-    random_num(2, 4)
-  )}${parseInt(Number(dt.getTime()) / 1000)}`,
-  transaction_ref: `TREF-${random_aph(5)}${parseInt(
-    Number(dt.getTime()) / 1000
-  )}${random_num(10, 99)}`,
-  deposit_id: `DEPOSIT-${random_num(10, 99)}${random_aph(2)}${parseInt(
-    Number(dt.getTime()) / 1000
-  )}`,
+  package_id: () => {
+    const dt = new Date();
+
+    return `PID-${random_num(10, 99)}${random_aph(
+      random_num(2, 4)
+    )}${dt.getTime()}`;
+  },
+  transaction_ref: () => {
+    const dt = new Date();
+    return `TREF-${random_aph(5)}${dt.getTime()}${random_num(10, 99)}`;
+  },
+  deposit_id: () => {
+    const dt = new Date();
+    return `DEPOSIT-${random_num(10, 99)}${random_aph(2)}${dt.getTime()}`;
+  },
   photo_upload_name: () => {
     const ext = "jpeg";
+    const dt = new Date();
 
     let year = dt.getFullYear();
     let month = String(Number(dt.getMonth() + 1)).padStart(2, "0");
@@ -100,10 +106,16 @@ export const IdGenerator = {
     )}${dt.getTime()}${random_num(10, 99)}.${ext}`;
   },
   otp: random_num(100000, 999999),
-  faq_id: `FAQs-${random_num(10, 99)}${random_aph(random_num(2, 4))}${parseInt(
-    Number(dt.getTime()) / 1000
-  )}`,
-  notification_id: `NOTICE-${random_num(10, 99)}${random_aph(
-    random_num(2, 4)
-  )}${parseInt(Number(dt.getTime()) / 1000)}`,
+  faq_id: () => {
+    const dt = new Date();
+    return `FAQs-${random_num(10, 99)}${random_aph(
+      random_num(2, 4)
+    )}${dt.getTime()}`;
+  },
+  notification_id: () => {
+    const dt = new Date();
+    return `NOTICE-${random_num(10, 99)}${random_aph(
+      random_num(2, 4)
+    )}${dt.getTime()}`;
+  },
 };

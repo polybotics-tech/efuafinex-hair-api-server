@@ -17,7 +17,7 @@ export const API_REQUESTS = {
         const options = {
           email,
           amount: amount * 100,
-          reference: IdGenerator.transaction_ref,
+          reference: IdGenerator.transaction_ref(),
           metadata: {
             user_id,
             package_id,
@@ -58,7 +58,7 @@ export const API_REQUESTS = {
         const options = {
           email,
           amount: amount * 100,
-          reference: IdGenerator.transaction_ref,
+          reference: IdGenerator.transaction_ref(),
           metadata: {
             user_id,
             package_id,

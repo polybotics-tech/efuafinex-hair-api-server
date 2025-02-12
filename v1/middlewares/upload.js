@@ -4,7 +4,6 @@ import sharp from "sharp";
 import { encode } from "blurhash";
 
 import { config } from "../../config.js";
-import { IdGenerator } from "../utils/id_generator.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { FileManagerUtility } from "../utils/file_manager.js";
 import { API_REQUESTS } from "../hooks/api/requests.js";

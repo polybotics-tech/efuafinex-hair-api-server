@@ -16,7 +16,7 @@ export const ParamsGenerator = {
       let created_time = FormatDateTime.to_database_entry();
       let last_updated = FormatDateTime.to_database_entry();
       let last_seen = FormatDateTime.to_database_entry();
-      let user_id = IdGenerator.user_id;
+      let user_id = IdGenerator.user_id();
       fullname = String(fullname)?.toLowerCase();
       email = String(email)?.toLowerCase();
       phone = phone ? String(phone) : "";
@@ -125,7 +125,7 @@ export const ParamsGenerator = {
       } = form;
 
       let created_time = FormatDateTime.to_database_entry();
-      let package_id = IdGenerator.package_id;
+      let package_id = IdGenerator.package_id();
       user_id = String(user_id);
       title = String(title)?.toLowerCase();
       description = String(description);
@@ -187,7 +187,7 @@ export const ParamsGenerator = {
       } = form;
 
       let created_time = FormatDateTime.to_database_entry();
-      let deposit_id = IdGenerator.deposit_id;
+      let deposit_id = IdGenerator.deposit_id();
       amount_expected = Number(amount_expected);
       let amount_paid = Number(0);
       fee_charged = Number(fee_charged);
@@ -239,7 +239,7 @@ export const ParamsGenerator = {
       let { question, answer, tags } = form;
 
       let created_time = FormatDateTime.to_database_entry();
-      let faq_id = IdGenerator.faq_id;
+      let faq_id = IdGenerator.faq_id();
       question = String(question)?.toLowerCase();
       answer = String(answer)?.toLowerCase();
       tags = String(tags)?.toLowerCase();
@@ -252,7 +252,7 @@ export const ParamsGenerator = {
       let { actor_id, notification_type, target_id } = form;
 
       let created_time = FormatDateTime.to_database_entry();
-      let notification_id = IdGenerator.notification_id;
+      let notification_id = IdGenerator.notification_id();
       actor_id = String(actor_id)?.toLowerCase();
       notification_type = String(notification_type)?.toLowerCase();
       target_id = String(target_id)?.toLowerCase();
