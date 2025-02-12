@@ -9,6 +9,32 @@ authRouter.get("/", (req, res) => {
   res.json({ success: true, message: "Auth route" });
 });
 
+//apple authentication
+authRouter.post("/apple", (req, res) => {
+  res.status(500).json({
+    success: false,
+    message: "Apple authentication not available at the moment",
+  });
+}); //remove when fixed
+/*authRouter.post(
+  "/apple",
+  AuthMiddleWare.validate_third_party_request,
+  AuthMiddleWare.authenticate_apple_signin,
+  AuthMiddleWare.generate_and_update_token,
+  UserMiddleware.update_user_last_seen,
+  AuthController.login
+);*/
+
+//google authentication
+authRouter.post(
+  "/google",
+  AuthMiddleWare.validate_third_party_request,
+  AuthMiddleWare.authenticate_google_signin,
+  AuthMiddleWare.generate_and_update_token,
+  UserMiddleware.update_user_last_seen,
+  AuthController.login
+);
+
 //login
 authRouter.post(
   "/login",

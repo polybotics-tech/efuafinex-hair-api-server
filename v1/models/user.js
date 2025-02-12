@@ -5,7 +5,7 @@ import { ParamsGenerator } from "../hooks/params.js";
 
 export const UserModel = {
   create_user: async (form) => {
-    const sql = `INSERT INTO ${db_tables.users} (created_time, user_id, user_name, fullname, email, phone, pass, auth_token, thumbnail, thumbnail_blur, last_updated, last_seen, push_notify, email_notify, is_verified) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO ${db_tables.users} (created_time, user_id, user_name, fullname, email, phone, pass, auth_token, thumbnail, thumbnail_blur, last_updated, last_seen, push_notify, email_notify, is_verified, from_apple, from_google) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     const params = ParamsGenerator.user.create_new_user(form);
 
     //attempt save to db
@@ -141,6 +141,22 @@ export const UserModel = {
   update_user_is_verified: async (user_id) => {
     const sql = `UPDATE ${db_tables.users} SET is_verified=? WHERE user_id=? LIMIT 1`;
     const params = ParamsGenerator.user.update_is_verified(user_id);
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
+  update_user_from_apple: async (user_id) => {
+    const sql = `UPDATE ${db_tables.users} SET from_apple=? WHERE user_id=? LIMIT 1`;
+    const params = ParamsGenerator.user.update_from_apple(user_id);
+
+    //attempt to update db
+    const attempt_to_update = await DB.update(sql, params);
+    return attempt_to_update;
+  },
+  update_user_from_google: async (user_id) => {
+    const sql = `UPDATE ${db_tables.users} SET from_google=? WHERE user_id=? LIMIT 1`;
+    const params = ParamsGenerator.user.update_from_google(user_id);
 
     //attempt to update db
     const attempt_to_update = await DB.update(sql, params);

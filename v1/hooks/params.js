@@ -19,8 +19,8 @@ export const ParamsGenerator = {
       let user_id = IdGenerator.user_id;
       fullname = String(fullname)?.toLowerCase();
       email = String(email)?.toLowerCase();
-      phone = String(phone);
-      pass = String(pass);
+      phone = phone ? String(phone) : "";
+      pass = pass ? String(pass) : "";
       let user_name = IdGenerator.user_name(fullname?.split(" ")[0]);
       let auth_token = "";
       let thumbnail = "";
@@ -28,6 +28,8 @@ export const ParamsGenerator = {
       let push_notify = Boolean(true);
       let email_notify = Boolean(true);
       let is_verified = Boolean(false);
+      let from_apple = Boolean(false);
+      let from_google = Boolean(false);
 
       return [
         created_time,
@@ -45,6 +47,8 @@ export const ParamsGenerator = {
         push_notify,
         email_notify,
         is_verified,
+        from_apple,
+        from_google,
       ];
     },
     update_otp_verification: (otp, user_id) => {
@@ -85,6 +89,16 @@ export const ParamsGenerator = {
       let is_verified = Boolean(true);
 
       return [is_verified, user_id];
+    },
+    update_from_apple: (user_id) => {
+      let from_apple = Boolean(true);
+
+      return [from_apple, user_id];
+    },
+    update_from_google: (user_id) => {
+      let from_google = Boolean(true);
+
+      return [from_google, user_id];
     },
     update_thumbnail: (thumbnail, thumbnail_blur, user_id) => {
       let last_updated = FormatDateTime.to_database_entry();

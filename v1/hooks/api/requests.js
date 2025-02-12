@@ -108,4 +108,23 @@ export const API_REQUESTS = {
       }
     },
   },
+  RemoteImage: {
+    fetch_array_buffer: async (image_url) => {
+      try {
+        // Fetch the image from the remote URL
+        const response = await axios({
+          url: image_url,
+          responseType: "arraybuffer", // Get the image as a buffer
+        });
+
+        if (!response) {
+          return false;
+        }
+        const { data } = response;
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
+  },
 };

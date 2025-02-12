@@ -6,6 +6,7 @@ import { Tokenizer } from "../hooks/tokenizer.js";
 import { config } from "../../config.js";
 import { IdGenerator } from "../utils/id_generator.js";
 import { FormatDateTime } from "../utils/datetime.js";
+import { UploadHelper } from "./upload.js";
 
 export const AuthMiddleWare = {
   validate_login_form: async (req, res, next) => {
@@ -150,12 +151,16 @@ export const AuthMiddleWare = {
     //compare password
     const match = await bcrypt.compare(pass, user?.pass);
     if (!match) {
-      DefaultHelper.return_error(
-        res,
-        401,
-        "Access denied. Invalid credentials"
-      );
-      return;
+      //check if user is from_google, and if current user pass is empty
+      const { from_google } = user;
+      if (!Boolean(from_google) && user?.pass != "") {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "Access denied. Invalid credentials"
+        );
+        return;
+      }
     }
 
     next();
@@ -364,5 +369,126 @@ export const AuthMiddleWare = {
     req.body.page = page;
     req.body.sort = String(sort)?.toLowerCase();
     next();
+  },
+  validate_third_party_request: async (req, res, next) => {
+    const { email } = req?.body;
+
+    if (!email) {
+      DefaultHelper.return_error(
+        res,
+        400,
+        "Email is missing from third party service"
+      );
+    }
+
+    next();
+  },
+  authenticate_apple_signin: async (req, res, next) => {
+    let form = req?.body;
+    const { email } = form;
+
+    //check if email exist for user
+    let user = await UserModel.fetch_user_by_email(email);
+
+    if (!user) {
+      //create new user
+      const new_user = await UserModel.create_user(form);
+
+      if (!new_user) {
+        DefaultHelper.return_error(
+          res,
+          500,
+          "Internal server error has occured"
+        );
+        return;
+      }
+
+      //if user created fetch user record
+      user = await UserModel.fetch_user_by_id(new_user);
+
+      if (!user) {
+        DefaultHelper.return_error(
+          res,
+          500,
+          "Internal server error has occured"
+        );
+        return;
+      }
+
+      //update new user to toggle on 'from_apple'
+      await UserModel.update_user_from_apple(user?.user_id);
+    }
+
+    req.body.user = user;
+    next();
+  },
+  authenticate_google_signin: async (req, res, next) => {
+    try {
+      let form = req?.body;
+      const { email } = form;
+
+      //check if email exist for user
+      let user = await UserModel.fetch_user_by_email(email);
+
+      if (!user) {
+        //create new user
+        const new_user = await UserModel.create_user(form);
+
+        if (!new_user) {
+          DefaultHelper.return_error(
+            res,
+            500,
+            "Internal server error has occured"
+          );
+          return;
+        }
+
+        //if user created fetch user record
+        user = await UserModel.fetch_user_by_id(new_user);
+
+        if (!user) {
+          DefaultHelper.return_error(
+            res,
+            500,
+            "Internal server error has occured"
+          );
+          return;
+        }
+
+        //update new user to toggle on 'from_google'
+        await UserModel.update_user_from_google(user?.user_id);
+      }
+
+      //try to update user thumbnail from google photo
+      const upload_photo = await UploadHelper.validate_google_photo_remote_url(
+        req,
+        user?.user_id
+      );
+
+      if (upload_photo && req?.body?.upload_url) {
+        const { upload_url, upload_blur } = req?.body;
+
+        let thumbnail_updated = await UserModel.update_user_thumbnail(
+          upload_url,
+          upload_blur,
+          user?.user_id
+        );
+
+        if (thumbnail_updated) {
+          //fetch updated user
+          user = await UserModel.fetch_user_by_user_id(user?.user_id);
+        }
+      }
+
+      req.body.user = user;
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error has occured"
+      );
+      return;
+    }
   },
 };

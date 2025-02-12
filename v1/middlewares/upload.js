@@ -7,6 +7,7 @@ import { config } from "../../config.js";
 import { IdGenerator } from "../utils/id_generator.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { FileManagerUtility } from "../utils/file_manager.js";
+import { API_REQUESTS } from "../hooks/api/requests.js";
 
 // set up multer storage (temporary memory storage to access buffer)
 const storage = multer.memoryStorage();
@@ -243,5 +244,75 @@ export const UploadMiddleWare = {
     }
 
     next();
+  },
+};
+
+export const UploadHelper = {
+  validate_google_photo_remote_url: async (req, user_id) => {
+    const { photo_url } = req?.body;
+
+    if (!photo_url || !user_id) {
+      return false;
+    }
+
+    //fetch photo buffer array
+    const buffer_array = await API_REQUESTS.RemoteImage.fetch_array_buffer(
+      photo_url
+    );
+
+    if (!buffer_array) {
+      return false;
+    }
+
+    const image_buffer = Buffer.from(buffer_array);
+
+    //resize file with sharp
+    const optimized_buffer = await sharp(image_buffer)
+      .jpeg()
+      .resize({
+        width: 1280,
+        height: 1280,
+      })
+      .toBuffer();
+
+    //save uploaded file to user folder in upload directory
+    let saved_file = await FileManagerUtility.save_uploaded_file_to_path(
+      optimized_buffer,
+      user_id
+    );
+
+    //check file saved
+    if (!saved_file) {
+      return false;
+    }
+
+    //store upload url
+    const upload_url = `${config.fileUpload.imageResourceDir}${user_id}/${saved_file}`;
+
+    //-- create blur for uploaded photo optimization
+    // specify number of components in each axes.
+    const componentX = config.fileUpload.blur.componentX;
+    const componentY = config.fileUpload.blur.componentY;
+
+    // converting provided image to a byte buffer.
+    const { data, info } = await sharp(optimized_buffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({
+        resolveWithObject: true,
+      });
+
+    const upload_blur = encode(
+      new Uint8ClampedArray(data),
+      info.width,
+      info.height,
+      componentX,
+      componentY
+    );
+
+    req.body.upload_url = upload_url;
+    req.body.upload_blur = upload_blur;
+
+    return true;
   },
 };
