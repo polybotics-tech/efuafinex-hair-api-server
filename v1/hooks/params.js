@@ -129,9 +129,13 @@ export const ParamsGenerator = {
       user_id = String(user_id);
       title = String(title)?.toLowerCase();
       description = String(description);
-      is_defined = Boolean(is_defined);
+      is_defined = Boolean(is_defined === "true" || is_defined === true);
       let package_type = is_defined ? "defined" : "free";
-      target_amount = is_defined ? Number(target_amount || 1000) : 0;
+      target_amount = is_defined
+        ? Number(target_amount) > 1000
+          ? Number(target_amount)
+          : 1000
+        : 0;
       let available_amount = Number(0);
       auto_complete = is_defined ? Boolean(auto_complete === "true") : false;
       fixed_deadline = Boolean(fixed_deadline === "true");

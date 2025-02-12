@@ -312,7 +312,7 @@ export const AuthMiddleWare = {
 
     try {
       if (!req.headers || !req.headers.authorization) {
-        DefaultHelper.return_error(res, 403, message);
+        DefaultHelper.return_error(res, 401, message);
         return;
       }
 
@@ -321,7 +321,7 @@ export const AuthMiddleWare = {
       const token = req.headers?.authorization.split(" ")[1];
 
       if (tokenKey !== config.tokenAuthorizationKey || !token) {
-        DefaultHelper.return_error(res, 403, message);
+        DefaultHelper.return_error(res, 401, message);
         return;
       }
 

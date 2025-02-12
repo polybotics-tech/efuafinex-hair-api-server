@@ -18,13 +18,12 @@ export const PackageController = {
     PackageEvent.emit("package-created", { data });
 
     //
-    DefaultHelper.return_success(
+    return DefaultHelper.return_success(
       res,
-      201,
+      200,
       "Package created successfully",
       data
     );
-    return;
   },
   fetch_single_package: async (req, res) => {
     const { target_package } = req?.body;

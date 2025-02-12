@@ -27,14 +27,11 @@ export const DefaultHelper = {
     message = "Request successful",
     data = {}
   ) => {
-    res
-      .status(statusCode)
-      .json({
-        success: true,
-        message,
-        data,
-      })
-      .end();
+    return res.status(statusCode).json({
+      success: true,
+      message,
+      data,
+    });
   },
 
   get_offset: (currentPage) => {

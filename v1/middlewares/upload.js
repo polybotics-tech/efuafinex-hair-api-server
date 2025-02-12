@@ -19,7 +19,6 @@ const single_upload = multer({
 export const UploadMiddleWare = {
   load_static_photo: () => e.static(config.fileUpload.imageUploadDir),
   upload_single_image: async (req, res, next) => {
-    console.log("from usi: ", req?.body);
     single_upload(req, res, function (err) {
       if (err instanceof multer.MulterError) {
         console.log("upload error multer: ", err);
@@ -146,7 +145,6 @@ export const UploadMiddleWare = {
     const { user_id, has_photo } = body;
 
     if (Boolean(has_photo === "true")) {
-      console.log("here: ", body);
       //check wether a file was passed
       if (!file || !user_id) {
         return DefaultHelper.return_error(

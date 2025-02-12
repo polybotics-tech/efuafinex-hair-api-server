@@ -13,9 +13,10 @@ const server = express();
 //server configuration for CORS
 server.use(cors());
 //server configuration to read as json format
-server.use(express.json());
+server.use(express.json({ limit: "50mb" }));
 server.use(
   express.urlencoded({
+    limit: "50mb",
     extended: true,
   })
 );
