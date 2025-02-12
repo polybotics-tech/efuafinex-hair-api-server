@@ -457,6 +457,9 @@ export const AuthMiddleWare = {
 
         //update new user to toggle on 'from_google'
         await UserModel.update_user_from_google(user?.user_id);
+
+        //update new user to toggle on 'is_verified'
+        await UserModel.update_user_is_verified(user?.user_id);
       }
 
       //try to update user thumbnail from google photo
