@@ -193,7 +193,7 @@ export const UploadMiddleWare = {
         .jpeg()
         .resize({
           width: 1280,
-          height: 1280,
+          height: 1920,
         })
         .toBuffer();
 
