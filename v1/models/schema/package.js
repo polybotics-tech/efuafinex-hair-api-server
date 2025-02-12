@@ -9,7 +9,7 @@ export const PackageSchema = {
     is_defined: Joi.boolean().required().messages({
       "any.required": "Please provide an 'is_defined' parameter",
     }),
-    target_amount: Joi.number().min(1000),
+    target_amount: Joi.optional(),
     auto_complete: Joi.boolean().required().messages({
       "any.required": "Please provide an 'auto_complete' parameter",
     }),

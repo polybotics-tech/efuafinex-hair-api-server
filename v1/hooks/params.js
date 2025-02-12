@@ -121,7 +121,7 @@ export const ParamsGenerator = {
       let available_amount = Number(0);
       auto_complete = is_defined ? Boolean(auto_complete === "true") : false;
       fixed_deadline = Boolean(fixed_deadline === "true");
-      duration = !duration ? 0 : Number(duration?.split("month")[0]);
+      duration = !duration ? 24 : Number(duration?.split("month")[0]);
       deadline = fixed_deadline
         ? FormatDateTime.to_database_entry(deadline)
         : FormatDateTime.to_database_entry(
