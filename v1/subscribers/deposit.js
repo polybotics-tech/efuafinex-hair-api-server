@@ -43,6 +43,7 @@ DepositEvent.on("update-status", async (args) => {
             data: {
               amount: paid_amount,
               package_id: deposit_record?.package_id,
+              transaction_ref: reference,
             },
           });
         }
