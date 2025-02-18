@@ -46,10 +46,7 @@ PackageEvent.on("fund-added-to-package", async (args) => {
     const new_amount = Number(available_amount + amount);
 
     //update package available amount
-    const update_package = await PackageModel.update_package_available_amount(
-      new_amount,
-      package_id
-    );
+    await PackageModel.update_package_available_amount(new_amount, package_id);
 
     //check if auto_complete is true, then status to completed on complete
     if (auto_complete) {

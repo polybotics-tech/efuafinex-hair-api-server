@@ -147,7 +147,9 @@ DepositEvent.on("deposit-made", async (args) => {
             exp_year,
             card_type,
           };
-        } else if (String(channel)?.toLowerCase() === "bank_transfer") {
+        } else if (
+          String(authorization?.channel)?.toLowerCase() === "bank_transfer"
+        ) {
           const {
             channel,
             sender_bank,
