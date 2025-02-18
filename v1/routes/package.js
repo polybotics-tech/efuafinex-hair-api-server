@@ -6,15 +6,6 @@ import { UploadMiddleWare } from "../middlewares/upload.js";
 
 export const packageRouter = e.Router();
 
-/*create new package
-packageRouter.post(
-  "/",
-  PackageMiddleware.validate_create_package_form,
-  AuthMiddleWare.validate_token_authorization,
-  PackageMiddleware.create_package,
-  PackageController.create_new_package
-);*/
-
 //create new package with dynamic photo upload
 packageRouter.post(
   "/",

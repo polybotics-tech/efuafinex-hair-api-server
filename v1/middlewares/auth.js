@@ -364,10 +364,12 @@ export const AuthMiddleWare = {
     const page =
       req.query?.page && req.query?.page > 0 ? parseInt(req?.query?.page) : 1;
     const sort = req.query?.sort || "";
+    const q = req.query?.q || "";
 
     //append current page to body request
     req.body.page = page;
     req.body.sort = String(sort)?.toLowerCase();
+    req.body.q = String(q)?.toLowerCase();
     next();
   },
   validate_third_party_request: async (req, res, next) => {

@@ -1,6 +1,5 @@
 import EventEmitter from "events";
 import { UserModel } from "../models/user.js";
-import { logbot } from "../../logger.js";
 import { PackageModel } from "../models/package.js";
 import { DepositEvent } from "./deposit.js";
 import { NotificationModel } from "../models/notifications.js";
@@ -22,22 +21,6 @@ PackageEvent.on("package-created", async (args) => {
   };
 
   await NotificationModel.create_notification(form);
-});
-
-PackageEvent.on("package-fetched", async (args) => {
-  try {
-    //extract user_id from data from args
-    const { data } = args;
-    const { meta } = data;
-    const { user_id } = meta;
-
-    // update user last seen
-    if (user_id) {
-      await UserModel.update_user_last_seen(user_id);
-    }
-  } catch (error) {
-    logbot.Error(error?.message);
-  }
 });
 
 PackageEvent.on("packages-fetched", async () => {

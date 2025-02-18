@@ -36,9 +36,6 @@ export const PackageController = {
     //if meta and packages stored in request body, return data
     let data = target_package;
 
-    //emit event
-    PackageEvent.emit("package-fetched", { data });
-
     //
     DefaultHelper.return_success(
       res,
@@ -88,6 +85,26 @@ export const PackageController = {
     }
 
     DefaultHelper.return_success(res, 200, "Package was successfully closed");
+    return;
+  },
+  fetch_multiple_packages: async (req, res) => {
+    const { packages, meta } = req?.body;
+
+    if (!packages || !meta) {
+      DefaultHelper.return_error(res, 400, "Unable to fetch app packages");
+      return;
+    }
+
+    //if meta and packages stored in request body, return data
+    let data = { packages, meta };
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "App packages fetched successfully",
+      data
+    );
     return;
   },
 };

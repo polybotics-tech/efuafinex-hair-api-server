@@ -185,4 +185,58 @@ export const UserMiddleware = {
 
     next();
   },
+  fetch_multiple_users: async (req, res, next) => {
+    try {
+      const { q, page } = req?.body;
+
+      //fetch users by q and page
+      const raw_users = await UserModel.fetch_multiple_users(q, page);
+
+      //meta data
+      const tus = await UserModel.count_all_multiple_users(q);
+      const meta = {
+        q,
+        page,
+        total_results: parseInt(tus),
+        has_next_page: DefaultHelper.check_has_prev_next_page(page, tus, true),
+        has_prev_page: DefaultHelper.check_has_prev_next_page(page, tus, false),
+      };
+
+      const users = [];
+
+      raw_users?.forEach((user) => {
+        users.push(DefaultHelper.hide_user_credentials(user));
+      });
+
+      //append to body request
+      req.body.users = users;
+      req.body.meta = meta;
+
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error occured"
+      );
+      return;
+    }
+  },
+  validate_user_id_params: async (req, res, next) => {
+    //grab the user id
+    const { user_id } = req?.params;
+
+    //fetch target user
+    const user = await UserModel.fetch_user_by_user_id(user_id);
+
+    if (!user) {
+      DefaultHelper.return_error(res, 404, "User not found");
+      return;
+    }
+
+    //append to body request
+    req.body.user = user;
+
+    next();
+  },
 };

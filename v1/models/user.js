@@ -2,6 +2,7 @@ import { db_tables } from "../utils/db_tables.js";
 import { DB } from "../hooks/db.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { ParamsGenerator } from "../hooks/params.js";
+import { config } from "../../config.js";
 
 export const UserModel = {
   create_user: async (form) => {
@@ -173,5 +174,31 @@ export const UserModel = {
     //attempt to update db
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
+  },
+  fetch_multiple_users: async (q, page = 1) => {
+    const offset = DefaultHelper.get_offset(page);
+    let query = `fullname LIKE '%${q}%' || email LIKE '%${q}%' `;
+
+    const sql = `SELECT * FROM ${db_tables.users} WHERE ${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+
+    const rows = await DB.read(sql);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    return data;
+  },
+  count_all_multiple_users: async (q) => {
+    let query = `fullname LIKE '%${q}%' || email LIKE '%${q}%'`;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.users} WHERE ${query}`;
+
+    const res = await DB.read(sql);
+
+    if (res?.length > 0 && res[0]?.hasOwnProperty("COUNT(*)")) {
+      const count = res[0]["COUNT(*)"];
+      return count;
+    } else {
+      return 0;
+    }
   },
 };

@@ -81,4 +81,30 @@ export const PackageModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
+  fetch_multiple_packages: async (q, page = 1) => {
+    const offset = DefaultHelper.get_offset(page);
+    let query = `package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%' `;
+
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE ${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+
+    const rows = await DB.read(sql);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    return data;
+  },
+  count_all_multiple_packages: async (q) => {
+    let query = `package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%'`;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE ${query}`;
+
+    const res = await DB.read(sql);
+
+    if (res?.length > 0 && res[0]?.hasOwnProperty("COUNT(*)")) {
+      const count = res[0]["COUNT(*)"];
+      return count;
+    } else {
+      return 0;
+    }
+  },
 };

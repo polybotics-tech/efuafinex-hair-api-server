@@ -119,4 +119,35 @@ export const PackageMiddleware = {
       return;
     }
   },
+  fetch_multiple_packages: async (req, res, next) => {
+    try {
+      const { q, page } = req?.body;
+
+      //fetch packages by q and page
+      const packages = await PackageModel.fetch_multiple_packages(q, page);
+
+      //meta data
+      const tup = await PackageModel.count_all_multiple_packages(q);
+      const meta = {
+        q,
+        page,
+        total_results: parseInt(tup),
+        has_next_page: DefaultHelper.check_has_prev_next_page(page, tup, true),
+        has_prev_page: DefaultHelper.check_has_prev_next_page(page, tup, false),
+      };
+
+      //append to body request
+      req.body.packages = packages;
+      req.body.meta = meta;
+
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error occured"
+      );
+      return;
+    }
+  },
 };

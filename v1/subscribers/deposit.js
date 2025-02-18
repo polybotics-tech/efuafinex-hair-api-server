@@ -48,16 +48,35 @@ DepositEvent.on("update-status", async (args) => {
         }
 
         //update deposit record extra
-        const { channel, bin, last4, exp_month, exp_year, card_type } =
-          authorization;
-        const extra = {
-          channel,
-          bin,
-          last4,
-          exp_month,
-          exp_year,
-          card_type,
-        };
+        let extra;
+
+        if (String(authorization?.channel)?.toLowerCase() === "card") {
+          const { channel, bin, last4, exp_month, exp_year, card_type } =
+            authorization;
+
+          extra = {
+            channel,
+            bin,
+            last4,
+            exp_month,
+            exp_year,
+            card_type,
+          };
+        } else if (String(channel)?.toLowerCase() === "bank_transfer") {
+          const {
+            channel,
+            sender_bank,
+            sender_name,
+            sender_bank_account_number,
+          } = authorization;
+
+          extra = {
+            channel,
+            sender_bank,
+            sender_name,
+            sender_bank_account_number,
+          };
+        }
 
         await DepositModel.update_deposit_record_extra(extra, reference);
       }
@@ -111,16 +130,35 @@ DepositEvent.on("deposit-made", async (args) => {
         }
 
         //update deposit record extra
-        const { channel, bin, last4, exp_month, exp_year, card_type } =
-          authorization;
-        const extra = {
-          channel,
-          bin,
-          last4,
-          exp_month,
-          exp_year,
-          card_type,
-        };
+        let extra;
+
+        if (String(authorization?.channel)?.toLowerCase() === "card") {
+          const { channel, bin, last4, exp_month, exp_year, card_type } =
+            authorization;
+
+          extra = {
+            channel,
+            bin,
+            last4,
+            exp_month,
+            exp_year,
+            card_type,
+          };
+        } else if (String(channel)?.toLowerCase() === "bank_transfer") {
+          const {
+            channel,
+            sender_bank,
+            sender_name,
+            sender_bank_account_number,
+          } = authorization;
+
+          extra = {
+            channel,
+            sender_bank,
+            sender_name,
+            sender_bank_account_number,
+          };
+        }
 
         await DepositModel.update_deposit_record_extra(extra, reference);
       }

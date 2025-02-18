@@ -93,4 +93,44 @@ export const UserController = {
     );
     return;
   },
+  fetch_multiple_users: async (req, res) => {
+    const { users, meta } = req?.body;
+
+    if (!users || !meta) {
+      DefaultHelper.return_error(res, 400, "Unable to fetch app users");
+      return;
+    }
+
+    //if meta and users stored in request body, return data
+    let data = { users, meta };
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "App users fetched successfully",
+      data
+    );
+    return;
+  },
+  fetch_single_user: async (req, res) => {
+    const { user } = req?.body;
+
+    if (!user) {
+      DefaultHelper.return_error(res, 400, "Unable to fetch user details");
+      return;
+    }
+
+    //if meta and users stored in request body, return data
+    let data = DefaultHelper.hide_user_credentials(user);
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "User details fetched successfully",
+      data
+    );
+    return;
+  },
 };

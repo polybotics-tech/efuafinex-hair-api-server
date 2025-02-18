@@ -110,3 +110,45 @@ The _/user/_ endpoints are mainly used to update user details and preferences. H
 #### Fetch Multilple Deposit Records For A Package
 
 `/deposit/records/:package_id` - GET - _query{?page}_ - **(token required)**
+
+### Admin Endpoints
+
+#### Create A Faq
+
+`/admin/faqs` - POST - json{question, answer, tags}
+
+#### Fetch Faqs
+
+`/admin/faqs` - GET - query{?page, ?q}
+
+#### Fetch Users
+
+`/admin/users` - GET - query{?page, ?q}
+
+#### Fetch User Details
+
+`/admin/users/:user_id` - GET
+
+#### Fetch Packages
+
+`/admin/packages` - GET - query{?page, ?q}
+
+#### Fetch Package Details
+
+`/admin/packages/:package_id` - GET
+
+#### Fetch User Packages Details
+
+`/admin/packages/user/:user_id` - GET
+
+#### Fetch Deposits
+
+`/admin/deposits` - GET - query{?page, ?q, ?sort}
+
+#### Fetch Deposit Details
+
+`/admin/deposits/:transaction_ref` - GET
+
+#### Fetch User Deposits Details
+
+`/admin/deposits/user/:user_id` - GET

@@ -254,4 +254,35 @@ export const DepositMiddleware = {
       DefaultHelper.return_error(res, 404, "Unable to verify transaction");
     }
   },
+  fetch_multiple_deposits: async (req, res, next) => {
+    try {
+      const { q, page } = req?.body;
+
+      //fetch deposits by q and page
+      const deposits = await DepositModel.fetch_multiple_deposits(q, page);
+
+      //meta data
+      const tup = await DepositModel.count_all_multiple_deposits(q);
+      const meta = {
+        q,
+        page,
+        total_results: parseInt(tup),
+        has_next_page: DefaultHelper.check_has_prev_next_page(page, tup, true),
+        has_prev_page: DefaultHelper.check_has_prev_next_page(page, tup, false),
+      };
+
+      //append to body request
+      req.body.deposits = deposits;
+      req.body.meta = meta;
+
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error occured"
+      );
+      return;
+    }
+  },
 };

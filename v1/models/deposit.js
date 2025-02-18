@@ -157,4 +157,36 @@ export const DepositModel = {
       return 0;
     }
   },
+  fetch_multiple_deposits: async (q, page = 1) => {
+    const offset = DefaultHelper.get_offset(page);
+    let query = `deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%' `;
+
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE ${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+
+    const rows = await DB.read(sql);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    if (data.length > 0) {
+      data.forEach((d) => {
+        d.extra = JSON.parse(d?.extra);
+      });
+    }
+
+    return data;
+  },
+  count_all_multiple_deposits: async (q) => {
+    let query = `deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%'`;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE ${query}`;
+
+    const res = await DB.read(sql);
+
+    if (res?.length > 0 && res[0]?.hasOwnProperty("COUNT(*)")) {
+      const count = res[0]["COUNT(*)"];
+      return count;
+    } else {
+      return 0;
+    }
+  },
 };
