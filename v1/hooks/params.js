@@ -220,9 +220,12 @@ export const ParamsGenerator = {
     update_status: (status, transaction_ref) => {
       let last_updated = FormatDateTime.to_database_entry();
       status =
-        String(status)?.toLowerCase() === "success" ||
-        String(status)?.toLowerCase() === "pending"
-          ? String(status)?.toLowerCase()
+        String(status)?.toLowerCase() === "success"
+          ? "success"
+          : String(status)?.toLowerCase() === "pending" ||
+            String(status)?.toLowerCase() === "processing" ||
+            String(status)?.toLowerCase() === "ongoing"
+          ? "pending"
           : "failed";
 
       return [last_updated, status, transaction_ref];

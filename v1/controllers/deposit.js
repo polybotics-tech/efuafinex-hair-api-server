@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { config } from "../../config.js";
 import { DepositEvent } from "../subscribers/deposit.js";
 import { DefaultHelper } from "../utils/helpers.js";
+import { DepositModel } from "../models/deposit.js";
 
 export const DepositController = {
   make_deposit: async (req, res) => {
@@ -27,9 +28,6 @@ export const DepositController = {
       fee_charged,
     };
 
-    //call event to update any pending deposit on records
-    DepositEvent.emit("update-pending-deposits");
-
     //
     DefaultHelper.return_success(
       res,
@@ -53,6 +51,17 @@ export const DepositController = {
       if (event.event === "charge.success") {
         console.log("Payment Successful:", event.data);
         // update your database here
+        const reference = event.data?.reference;
+
+        //fetch deposit record
+        const deposit_record =
+          await DepositModel.fetch_deposit_by_transaction_ref(reference);
+
+        if (deposit_record?.transaction_ref === reference) {
+          let data = { reference, deposit_record };
+
+          DepositEvent.emit("deposit-made", { data });
+        }
       }
 
       res.sendStatus(200);
