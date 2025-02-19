@@ -9,6 +9,7 @@ export const UserSchema = {
     }),
     phone: Joi.number().required().messages({
       "any.required": "Please provide a valid phone number",
+      "number.empty": "Please provide a valid phone number",
     }),
   }),
   update_pass: Joi.object({

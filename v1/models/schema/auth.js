@@ -41,6 +41,7 @@ export const AuthSchema = {
       }),
     phone: Joi.number().required().messages({
       "any.required": "Please provide a valid phone number",
+      "number.empty": "Please provide a valid phone number",
     }),
     confirm_pass: Joi.string().valid(Joi.ref("pass")).required().messages({
       "any.required": "Confirm password must match password",

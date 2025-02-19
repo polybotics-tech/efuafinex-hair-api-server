@@ -36,7 +36,7 @@ export const config = {
     publicKey: process.env.EFH_PAYSTACK_PUBLIC_KEY,
   },
   deposit: {
-    minimumAllowed: 100,
+    minimumAllowed: 1000,
     maximumAllowed: 500000,
   },
   publicPath: {

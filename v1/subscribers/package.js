@@ -4,6 +4,7 @@ import { PackageModel } from "../models/package.js";
 import { DepositEvent } from "./deposit.js";
 import { NotificationModel } from "../models/notifications.js";
 import { MailSender } from "../hooks/mailer.js";
+import { config } from "../../config.js";
 
 export const PackageEvent = new EventEmitter();
 
@@ -53,7 +54,7 @@ PackageEvent.on("fund-added-to-package", async (args) => {
       //check difference in target amount and new amount
       let balance = Number(target_amount - new_amount);
 
-      if (Number(balance) < 100) {
+      if (Number(balance) < Number(config.deposit.minimumAllowed)) {
         //no other deposit can be made
         const update_status = await PackageModel.update_package_status(
           "completed",
