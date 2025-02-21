@@ -175,11 +175,20 @@ export const UserModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
-  fetch_multiple_users: async (q, page = 1) => {
+  fetch_multiple_users: async (q, page = 1, sort = "all") => {
     const offset = DefaultHelper.get_offset(page);
-    let query = `fullname LIKE '%${q}%' || email LIKE '%${q}%' `;
 
-    const sql = `SELECT * FROM ${db_tables.users} WHERE ${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = ["verified", "unverified"];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `is_verified = ${Boolean(sort === "verified")} && `;
+    }
+
+    let query = `(fullname LIKE '%${q}%' || user_name LIKE '%${q}%' || email LIKE '%${q}%') `;
+
+    const sql = `SELECT * FROM ${db_tables.users} WHERE ${filter}${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
 
     const rows = await DB.read(sql);
 
@@ -187,10 +196,18 @@ export const UserModel = {
 
     return data;
   },
-  count_all_multiple_users: async (q) => {
-    let query = `fullname LIKE '%${q}%' || email LIKE '%${q}%'`;
+  count_all_multiple_users: async (q, sort = "all") => {
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = ["verified", "unverified"];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `is_verified = ${Boolean(sort === "verified")} && `;
+    }
 
-    const sql = `SELECT COUNT(*) FROM ${db_tables.users} WHERE ${query}`;
+    let query = `(fullname LIKE '%${q}%' || user_name LIKE '%${q}%' || email LIKE '%${q}%')`;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.users} WHERE ${filter}${query}`;
 
     const res = await DB.read(sql);
 

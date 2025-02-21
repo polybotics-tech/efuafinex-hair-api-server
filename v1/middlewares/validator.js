@@ -18,4 +18,11 @@ export const FormValidator = {
   create_package: validator(PackageSchema.create_package),
   make_deposit: validator(DepositSchema.make_deposit),
   create_faqs: validator(FaqsSchema.create_faqs),
+  admin: {
+    login: validator(AuthSchema.admin.login),
+    register: validator(AuthSchema.admin.register),
+    reset_passcode: validator(AuthSchema.admin.reset_passcode),
+    otp_verification: validator(AuthSchema.admin.otp_verification),
+    //update_pass: validator(UserSchema.update_pass),
+  },
 };

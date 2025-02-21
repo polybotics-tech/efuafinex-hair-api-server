@@ -140,9 +140,164 @@ export const AuthController = {
     DefaultHelper.return_success(
       res,
       200,
-      "Account user was successfully verified",
+      "User account was successfully verified",
       data
     );
     return;
+  },
+  admin: {
+    login: async (req, res) => {
+      const { admin, token } = req?.body;
+
+      if (!admin || !token) {
+        DefaultHelper.return_error(res, 400, "Unable to update admin token");
+        return;
+      }
+
+      //if token stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin), token };
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Admin logged in successfully",
+        data
+      );
+      return;
+    },
+    register: async (req, res) => {
+      const { admin, token } = req?.body;
+
+      if (!admin || !token) {
+        DefaultHelper.return_error(res, 400, "Unable to update admin token");
+        return;
+      }
+
+      //if token stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin), token };
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Admin registered successfully",
+        data
+      );
+      return;
+    },
+    revalidate: async (req, res) => {
+      const { admin } = req?.body;
+
+      if (!admin) {
+        DefaultHelper.return_error(res, 404, "Admin not found");
+        return;
+      }
+
+      //if token stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin) };
+
+      //
+      DefaultHelper.return_success(res, 200, "Admin token validated", data);
+      return;
+    },
+    forgot_passcode: async (req, res) => {
+      const { admin } = req?.body;
+
+      if (!admin) {
+        DefaultHelper.return_error(
+          res,
+          400,
+          "No admin account found for email"
+        );
+        return;
+      }
+
+      //if admin stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin) };
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Email verification in progress",
+        data
+      );
+      return;
+    },
+    reset_pass: async (req, res) => {
+      const { admin, token } = req?.body;
+
+      if (!admin || !token) {
+        DefaultHelper.return_error(res, 400, "Unable to update admin token");
+        return;
+      }
+
+      //if token stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin), token };
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Account password updated successfully",
+        data
+      );
+      return;
+    },
+    generate_otp: async (req, res) => {
+      const { admin, otp } = req?.body;
+
+      if (!admin || !otp) {
+        DefaultHelper.return_error(
+          res,
+          400,
+          "Unable to generate otp for admin"
+        );
+        return;
+      }
+
+      //if admin stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin), otp };
+
+      //emit event
+      AuthEvent.emit("otp-generated", {
+        data: { user: DefaultHelper.hide_admin_credentials(admin), otp },
+      });
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "One-Time-Password generated for admin",
+        data
+      );
+      return;
+    },
+    verify_otp: async (req, res) => {
+      const { admin, token } = req?.body;
+
+      if (!admin || !token) {
+        DefaultHelper.return_error(res, 400, "Unable to update admin token");
+        return;
+      }
+
+      //if admin stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin), token };
+
+      //emit event
+      AuthEvent.emit("otp-verified", {
+        data: { user: DefaultHelper.hide_admin_credentials(admin), token },
+      });
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Admin account was successfully verified",
+        data
+      );
+      return;
+    },
   },
 };

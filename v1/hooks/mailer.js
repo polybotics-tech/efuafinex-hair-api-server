@@ -11,10 +11,10 @@ var mailGenerator = new Mailgen({
     name: "EFUAFINEX HAIR",
     link: "https://polybotics.tech/",
     // custom copyright message
-    copyright: `Copyright © ${new Date().getFullYear()} EFUAFINIX. All rights reserved.`,
+    copyright: `Copyright © ${new Date().getFullYear()} EFUAFINEX. All rights reserved.`,
     // optional brand logo
-    // logo: 'https://mailgen.js/img/logo.png'
-    // logoHeight: '30px'
+    logo: "https://test.polybotics.tech/uploads/icon.png",
+    logoHeight: "30px",
   },
 });
 

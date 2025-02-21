@@ -296,4 +296,53 @@ export const ParamsGenerator = {
       ];
     },
   },
+  admin: {
+    update_auth_token: (auth_token, admin_id) => {
+      auth_token = `${auth_token}`;
+
+      return [auth_token, admin_id];
+    },
+    create_new_admin: (form) => {
+      let { fullname, email, phone, passcode } = form;
+
+      let created_time = FormatDateTime.to_database_entry();
+      let admin_id = IdGenerator.admin_id();
+      fullname = String(fullname)?.toLowerCase();
+      email = String(email)?.toLowerCase();
+      phone = phone ? String(phone) : "";
+      passcode = passcode ? String(passcode) : "";
+      let admin_name = IdGenerator.admin_name(fullname?.split(" ")[0]);
+      let auth_token = "";
+      let is_verified = Boolean(false);
+
+      return [
+        created_time,
+        admin_id,
+        admin_name,
+        fullname,
+        email,
+        phone,
+        passcode,
+        auth_token,
+        is_verified,
+      ];
+    },
+    update_data: (fullname, phone, admin_id) => {
+      fullname = String(fullname);
+      phone = String(phone);
+
+      return [fullname, phone, admin_id];
+    },
+    update_passcode: (passcode, admin_id) => {
+      passcode = `${passcode}`;
+      admin_id = `${admin_id}`;
+
+      return [passcode, admin_id];
+    },
+    update_is_verified: (admin_id) => {
+      let is_verified = Boolean(true);
+
+      return [is_verified, admin_id];
+    },
+  },
 };

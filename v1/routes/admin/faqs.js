@@ -18,6 +18,7 @@ faqsRouter.get(
 faqsRouter.post(
   "/",
   FaqsMiddleware.validate_create_faqs_form,
+  AuthMiddleWare.admin.validate_token_authorization,
   FaqsMiddleware.create_faq,
   FaqsController.create_new_faq
 ); //review this later for authentication

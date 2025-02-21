@@ -9,6 +9,13 @@ export const Tokenizer = {
 
     return token;
   },
+  generate_admin_token: (admin_id) => {
+    let token = jsonwebtoken.sign({ admin_id }, config.tokenSecretKey, {
+      expiresIn: config.tokenExpiry,
+    });
+
+    return token;
+  },
 
   decode_token: (token) => {
     let decoded = jsonwebtoken.verify(token, config.tokenSecretKey);

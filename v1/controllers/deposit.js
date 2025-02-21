@@ -129,4 +129,24 @@ export const DepositController = {
     );
     return;
   },
+  fetch_total_transactions: async (req, res) => {
+    const { total_deposits } = req?.body;
+
+    if (!total_deposits && total_deposits != 0) {
+      DefaultHelper.return_error(res, 400, "Unable to fetch total deposits");
+      return;
+    }
+
+    //if total_deposits stored in request body, return data
+    let data = { total_deposits };
+
+    //
+    DefaultHelper.return_success(
+      res,
+      200,
+      "Total deposits fetched successfully",
+      data
+    );
+    return;
+  },
 };

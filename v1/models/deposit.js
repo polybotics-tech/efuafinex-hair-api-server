@@ -88,12 +88,15 @@ export const DepositModel = {
   fetch_user_deposits: async (user_id, page = 1, sort = "all") => {
     const offset = DefaultHelper.get_offset(page);
 
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
     let filter = "";
-    if (sort != "all") {
-      filter = ` && status = '${sort}'`;
+    let allowedSorts = ["pending", "failed", "success"];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
     }
 
-    const sql = `SELECT * FROM ${db_tables.deposits} WHERE user_id = ?${filter} ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE ${filter}user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);
@@ -109,12 +112,15 @@ export const DepositModel = {
     return data;
   },
   count_all_user_deposits: async (user_id, sort = "all") => {
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
     let filter = "";
-    if (sort != "all") {
-      filter = ` && status = '${sort}'`;
+    let allowedSorts = ["pending", "failed", "success"];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
     }
 
-    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE user_id = ?${filter}`;
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE ${filter}user_id = ?`;
     const params = [user_id];
 
     const res = await DB.read(sql, params);
@@ -157,11 +163,20 @@ export const DepositModel = {
       return 0;
     }
   },
-  fetch_multiple_deposits: async (q, page = 1) => {
+  fetch_multiple_deposits: async (q = "", page = 1, sort = "all") => {
     const offset = DefaultHelper.get_offset(page);
-    let query = `deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%' `;
 
-    const sql = `SELECT * FROM ${db_tables.deposits} WHERE ${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = ["pending", "failed", "success"];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
+    }
+
+    let query = `(deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%') `;
+
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE ${filter}${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
 
     const rows = await DB.read(sql);
 
@@ -175,16 +190,39 @@ export const DepositModel = {
 
     return data;
   },
-  count_all_multiple_deposits: async (q) => {
-    let query = `deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%'`;
+  count_all_multiple_deposits: async (q = "", sort = "all") => {
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = ["pending", "failed", "success"];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
+    }
 
-    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE ${query}`;
+    let query = `(deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%')`;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE ${filter}${query}`;
 
     const res = await DB.read(sql);
 
     if (res?.length > 0 && res[0]?.hasOwnProperty("COUNT(*)")) {
       const count = res[0]["COUNT(*)"];
       return count;
+    } else {
+      return 0;
+    }
+  },
+  sum_deposits_by_year: async (year) => {
+    const yearStart = `${year}-01-01`;
+    const yearEnd = `${year}-12-31`;
+
+    const sql = `SELECT SUM(amount_paid) AS total_deposits FROM ${db_tables.deposits} WHERE status = 'success' && (created_time >= '${yearStart}' && created_time <= '${yearEnd}')`;
+
+    const res = await DB.read(sql);
+
+    if (res?.length > 0 && res[0]?.hasOwnProperty("total_deposits")) {
+      const sum = res[0]["total_deposits"];
+      return Number(sum || 0);
     } else {
       return 0;
     }

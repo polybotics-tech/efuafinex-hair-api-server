@@ -37,10 +37,24 @@ export const PackageModel = {
 
     return data.length > 0 ? data[0] : false;
   },
-  fetch_user_packages: async (user_id, page = 1) => {
+  fetch_user_packages: async (user_id, page = 1, sort = "all") => {
     const offset = DefaultHelper.get_offset(page);
 
-    const sql = `SELECT * FROM ${db_tables.packages} WHERE user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = [
+      "in-progress",
+      "completed",
+      "on-delivery",
+      "delivered",
+      "canceled",
+    ];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
+    }
+
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE ${filter}user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);
@@ -49,8 +63,22 @@ export const PackageModel = {
 
     return data;
   },
-  count_all_user_packages: async (user_id) => {
-    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE user_id = ?`;
+  count_all_user_packages: async (user_id, sort = "all") => {
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = [
+      "in-progress",
+      "completed",
+      "on-delivery",
+      "delivered",
+      "canceled",
+    ];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
+    }
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE ${filter}user_id = ?`;
     const params = [user_id];
 
     const res = await DB.read(sql, params);
@@ -81,11 +109,26 @@ export const PackageModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
-  fetch_multiple_packages: async (q, page = 1) => {
+  fetch_multiple_packages: async (q = "", page = 1, sort = "all") => {
     const offset = DefaultHelper.get_offset(page);
-    let query = `package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%' `;
 
-    const sql = `SELECT * FROM ${db_tables.packages} WHERE ${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = [
+      "in-progress",
+      "completed",
+      "on-delivery",
+      "delivered",
+      "canceled",
+    ];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
+    }
+
+    let query = `(package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%') `;
+
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE ${filter}${query}ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
 
     const rows = await DB.read(sql);
 
@@ -93,10 +136,24 @@ export const PackageModel = {
 
     return data;
   },
-  count_all_multiple_packages: async (q) => {
-    let query = `package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%'`;
+  count_all_multiple_packages: async (q = "", sort = "all") => {
+    //filter query by sort parameter passed by user
+    sort = String(sort)?.trim()?.toLowerCase();
+    let filter = "";
+    let allowedSorts = [
+      "in-progress",
+      "completed",
+      "on-delivery",
+      "delivered",
+      "canceled",
+    ];
+    if (sort != "all" && allowedSorts?.includes(sort)) {
+      filter = `status = '${sort}' && `;
+    }
 
-    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE ${query}`;
+    let query = `(package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%')`;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE ${filter}${query}`;
 
     const res = await DB.read(sql);
 

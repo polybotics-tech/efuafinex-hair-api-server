@@ -121,16 +121,21 @@ export const PackageMiddleware = {
   },
   fetch_multiple_packages: async (req, res, next) => {
     try {
-      const { q, page } = req?.body;
+      const { q, page, sort } = req?.body;
 
       //fetch packages by q and page
-      const packages = await PackageModel.fetch_multiple_packages(q, page);
+      const packages = await PackageModel.fetch_multiple_packages(
+        q,
+        page,
+        sort
+      );
 
       //meta data
-      const tup = await PackageModel.count_all_multiple_packages(q);
+      const tup = await PackageModel.count_all_multiple_packages(q, sort);
       const meta = {
         q,
         page,
+        sort,
         total_results: parseInt(tup),
         has_next_page: DefaultHelper.check_has_prev_next_page(page, tup, true),
         has_prev_page: DefaultHelper.check_has_prev_next_page(page, tup, false),
@@ -149,5 +154,35 @@ export const PackageMiddleware = {
       );
       return;
     }
+  },
+  validate_package_status_params: async (req, res, next) => {
+    //grab the package id
+    const { status } = req?.params;
+    const { target_package } = req?.body;
+
+    let status_choice = String(status)?.trim()?.toLowerCase();
+
+    const allowed_statuses = ["delivered", "canceled"];
+    const preceeding_status = "on-delivery";
+    const package_current_status = target_package?.status;
+
+    if (!allowed_statuses?.includes(status_choice)) {
+      DefaultHelper.return_error(
+        res,
+        403,
+        "Access denied. Unknown status submitted"
+      );
+      return;
+    }
+
+    if (String(package_current_status)?.toLowerCase() != preceeding_status) {
+      DefaultHelper.return_error(res, 400, "Unable to update package status");
+      return;
+    }
+
+    //append to body request
+    req.body.status_choice = status_choice;
+
+    next();
   },
 };

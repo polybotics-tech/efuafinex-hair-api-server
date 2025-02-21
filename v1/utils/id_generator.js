@@ -118,4 +118,12 @@ export const IdGenerator = {
       random_num(2, 4)
     )}${dt.getTime()}`;
   },
+  admin_id: () => {
+    const dt = new Date();
+    return `ADMIN-${random_num(10, 99)}${random_aph(3)}${dt.getTime()}`;
+  },
+  admin_name: (first_name) =>
+    `${first_name}-${random_num(10, 999)}${random_aph(
+      random_num(2, 4)
+    )}${random_num(10, 999)}`,
 };

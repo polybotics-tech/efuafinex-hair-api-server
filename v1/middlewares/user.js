@@ -4,6 +4,7 @@ import { DefaultHelper } from "../utils/helpers.js";
 import { FormValidator } from "./validator.js";
 import { config } from "../../config.js";
 import { FileManagerUtility } from "../utils/file_manager.js";
+import { AdminModel } from "../models/admin.js";
 
 export const UserMiddleware = {
   validate_update_account_form: async (req, res, next) => {
@@ -187,13 +188,13 @@ export const UserMiddleware = {
   },
   fetch_multiple_users: async (req, res, next) => {
     try {
-      const { q, page } = req?.body;
+      const { q, page, sort } = req?.body;
 
       //fetch users by q and page
-      const raw_users = await UserModel.fetch_multiple_users(q, page);
+      const raw_users = await UserModel.fetch_multiple_users(q, page, sort);
 
       //meta data
-      const tus = await UserModel.count_all_multiple_users(q);
+      const tus = await UserModel.count_all_multiple_users(q, sort);
       const meta = {
         q,
         page,
@@ -238,5 +239,38 @@ export const UserMiddleware = {
     req.body.user = user;
 
     next();
+  },
+  admin: {
+    hash_new_passcode: async (req, res, next) => {
+      const { new_passcode } = req?.body;
+      //hash password
+      const hashed = bcrypt.hashSync(
+        new_passcode,
+        Number(config.bcryptHashSalt)
+      );
+      if (hashed) {
+        req.body.new_passcode = String(hashed);
+        next();
+      } else {
+        DefaultHelper.return_error(res, 400, "Unable to process request");
+        return;
+      }
+    },
+    store_new_passcode: async (req, res, next) => {
+      const { new_passcode, admin_id } = req?.body;
+      //
+      const pass_updated = AdminModel.update_admin_passcode(
+        new_passcode,
+        admin_id
+      );
+
+      if (!pass_updated) {
+        DefaultHelper.return_error(res, 400, "Error updating account passcode");
+        return;
+      }
+
+      //done updating password
+      next();
+    },
   },
 };

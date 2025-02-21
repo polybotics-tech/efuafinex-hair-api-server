@@ -256,13 +256,17 @@ export const DepositMiddleware = {
   },
   fetch_multiple_deposits: async (req, res, next) => {
     try {
-      const { q, page } = req?.body;
+      const { q, page, sort } = req?.body;
 
       //fetch deposits by q and page
-      const deposits = await DepositModel.fetch_multiple_deposits(q, page);
+      const deposits = await DepositModel.fetch_multiple_deposits(
+        q,
+        page,
+        sort
+      );
 
       //meta data
-      const tup = await DepositModel.count_all_multiple_deposits(q);
+      const tup = await DepositModel.count_all_multiple_deposits(q, sort);
       const meta = {
         q,
         page,
@@ -275,6 +279,29 @@ export const DepositMiddleware = {
       req.body.deposits = deposits;
       req.body.meta = meta;
 
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error occured"
+      );
+      return;
+    }
+  },
+  fetch_total_transactions: async (req, res, next) => {
+    try {
+      let { q } = req?.body;
+
+      if (!q || isNaN(q) || q === "") {
+        let d = new Date();
+        q = d.getFullYear(); //if q is not defined, set q to current year
+      }
+
+      //fetch deposits by q which is year
+      const total_deposits = await DepositModel.sum_deposits_by_year(q);
+
+      req.body.total_deposits = total_deposits;
       next();
     } catch (error) {
       DefaultHelper.return_error(

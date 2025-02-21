@@ -70,6 +70,17 @@ export const DefaultHelper = {
       return user;
     }
   },
+  hide_admin_credentials: (admin) => {
+    let pass_deleted = delete admin["passcode"];
+    let token_deleted = delete admin["auth_token"];
+    if (pass_deleted && token_deleted) {
+      return admin;
+    } else {
+      admin.passcode = "";
+      admin.auth_token = "";
+      return admin;
+    }
+  },
   calculate_fee_charge_from_amount: (amount) => {
     let wave = Boolean(Number(amount) < 2000); //whether to wave extra charge
     let fee;

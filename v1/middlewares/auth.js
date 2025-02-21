@@ -7,6 +7,7 @@ import { config } from "../../config.js";
 import { IdGenerator } from "../utils/id_generator.js";
 import { FormatDateTime } from "../utils/datetime.js";
 import { UploadHelper } from "./upload.js";
+import { AdminModel } from "../models/admin.js";
 
 export const AuthMiddleWare = {
   validate_login_form: async (req, res, next) => {
@@ -495,5 +496,365 @@ export const AuthMiddleWare = {
       );
       return;
     }
+  },
+  admin: {
+    validate_login_form: async (req, res, next) => {
+      let form = req?.body;
+
+      //validate request
+      const { error, value } = FormValidator.admin.login(form);
+
+      // return if error
+      if (error) {
+        DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+        return;
+      }
+
+      next();
+    },
+    validate_register_form: async (req, res, next) => {
+      let form = req?.body;
+
+      //validate request
+      const { error, value } = FormValidator.admin.register(form);
+
+      // return if error
+      if (error) {
+        DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+        return;
+      }
+
+      next();
+    },
+    validate_token_authorization: async (req, res, next) => {
+      let message = "Access denied. Authorization validation failed";
+      let umessage = "Access denied. Admin not found";
+
+      try {
+        if (!req.headers || !req.headers.authorization) {
+          DefaultHelper.return_error(res, 401, message);
+          return;
+        }
+
+        //check if header is recognized
+        const tokenKey = req.headers?.authorization.split(" ")[0];
+        const token = req.headers?.authorization.split(" ")[1];
+
+        if (tokenKey !== config.tokenAuthorizationKey || !token) {
+          DefaultHelper.return_error(res, 401, message);
+          return;
+        }
+
+        //get the admin_id from the decoded token
+        const decoded_token = Tokenizer.decode_token(token);
+        if (!decoded_token || !decoded_token?.admin_id) {
+          DefaultHelper.return_error(res, 401, message);
+          return;
+        }
+
+        //take note of decoded admin_id
+        const decoded_admin_id = decoded_token?.admin_id;
+
+        //fetch admin by token
+        const token_admin = await AdminModel.fetch_admin_by_auth_token(token);
+
+        if (!token_admin) {
+          DefaultHelper.return_error(res, 404, umessage);
+          return;
+        }
+
+        //compare admin ids
+        if (decoded_admin_id != token_admin?.admin_id) {
+          DefaultHelper.return_error(res, 401, message);
+          return;
+        }
+
+        //attach admin_id and admin to request body
+        req.body.admin_id = decoded_admin_id;
+        req.body.admin = token_admin;
+
+        next();
+      } catch (error) {
+        DefaultHelper.return_error(res, 401, message);
+        return;
+      }
+    },
+    check_email_is_new: async (req, res, next) => {
+      let { email } = req?.body;
+
+      //check if email exist for admin
+      const adminFound = await AdminModel.fetch_admin_by_email(email);
+
+      if (adminFound) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "An admin account exists with this email.",
+          { email }
+        );
+        return;
+      }
+
+      //email doesnt exist on record
+      next();
+    },
+    validate_reset_passcode_form: async (req, res, next) => {
+      let form = req?.body;
+
+      //validate request
+      const { error, value } = FormValidator.admin.reset_passcode(form);
+
+      // return if error
+      if (error) {
+        DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+        return;
+      }
+
+      next();
+    },
+    validate_otp_form: async (req, res, next) => {
+      let form = req?.body;
+
+      //validate request
+      const { error, value } = FormValidator.admin.otp_verification(form);
+
+      // return if error
+      if (error) {
+        DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+        return;
+      }
+
+      next();
+    },
+    find_admin_by_email: async (req, res, next) => {
+      let { email } = req?.body;
+
+      //check if email exist for admin
+      const adminFound = await AdminModel.fetch_admin_by_email(email);
+
+      if (!adminFound) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "Access denied. Invalid credentials",
+          { email }
+        );
+        return;
+      }
+
+      req.body.admin = adminFound;
+      next();
+    },
+    find_admin_by_admin_id: async (req, res, next) => {
+      let { admin_id } = req?.body;
+
+      //check if admin_id exist for admin
+      const adminFound = await AdminModel.fetch_admin_by_admin_id(admin_id);
+
+      if (!adminFound) {
+        DefaultHelper.return_error(res, 404, "Access denied. Admin not found", {
+          admin_id,
+        });
+        return;
+      }
+
+      req.body.admin = adminFound;
+      next();
+    },
+    hash_new_passcode: async (req, res, next) => {
+      const { passcode } = req?.body;
+      //hash passcode
+      const hashed = bcrypt.hashSync(passcode, Number(config.bcryptHashSalt));
+      if (hashed) {
+        req.body.passcode = String(hashed);
+        next();
+      } else {
+        DefaultHelper.return_error(res, 400, "Unable to process request");
+        return;
+      }
+    },
+    compare_passcode_match: async (req, res, next) => {
+      const { admin, passcode } = req?.body;
+
+      //compare passcodeword
+      const match = await bcrypt.compare(passcode, admin?.passcode);
+      if (!match) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "Access denied. Invalid credentials"
+        );
+        return;
+      }
+
+      next();
+    },
+    create_and_store_admin: async (req, res, next) => {
+      //create new admin
+      const new_admin = await AdminModel.create_admin(req?.body);
+
+      if (!new_admin) {
+        DefaultHelper.return_error(
+          res,
+          500,
+          "Internal server error has occured"
+        );
+        return;
+      }
+
+      //if admin created fetch admin record
+      const admin = await AdminModel.fetch_admin_by_id(new_admin);
+
+      if (!admin) {
+        DefaultHelper.return_error(
+          res,
+          500,
+          "Internal server error has occured"
+        );
+        return;
+      }
+
+      req.body.admin = admin;
+      next();
+    },
+    generate_and_update_token: async (req, res, next) => {
+      const { admin } = req?.body;
+      const { admin_id } = admin;
+
+      if (!admin_id) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "Access denied. Invalid authentication credentials"
+        );
+        return;
+      }
+
+      //generate new token
+      const new_token = Tokenizer.generate_admin_token(admin_id);
+
+      if (!new_token) {
+        DefaultHelper.return_error(
+          res,
+          500,
+          "Internal server error has occured"
+        );
+        return;
+      }
+
+      //update token in admin records on db
+      const token_updated = AdminModel.update_admin_token(new_token, admin_id);
+
+      if (!token_updated) {
+        DefaultHelper.return_error(res, 400, "Unable to update admin token");
+        return;
+      }
+
+      req.body.token = new_token;
+
+      next();
+    },
+    generate_and_update_otp: async (req, res, next) => {
+      const { admin } = req?.body;
+      const { admin_id } = admin;
+
+      if (!admin_id) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "Access denied. Invalid authentication credentials"
+        );
+        return;
+      }
+
+      let new_otp;
+
+      //check if otp exists for user
+      const otp_exist = await UserModel.fetch_otp_by_user_id(admin_id);
+
+      //check if created_time is less than 15
+      if (
+        otp_exist &&
+        !FormatDateTime.is_more_than_mins(otp_exist?.created_time, 15)
+      ) {
+        new_otp = otp_exist?.otp;
+      } else {
+        //generate new otp
+        new_otp = IdGenerator.otp;
+      }
+
+      if (!new_otp) {
+        DefaultHelper.return_error(
+          res,
+          500,
+          "Internal server error has occured"
+        );
+        return;
+      }
+
+      //update otp in records on db
+      let otp_updated;
+      if (otp_exist) {
+        otp_updated = await UserModel.update_otp_verification(
+          new_otp,
+          admin_id
+        );
+      } else {
+        otp_updated = await UserModel.create_otp_verification(
+          new_otp,
+          admin_id
+        );
+      }
+
+      if (!otp_updated) {
+        DefaultHelper.return_error(
+          res,
+          400,
+          "Unable to generate otp for admin"
+        );
+        return;
+      }
+
+      req.body.otp = new_otp;
+
+      next();
+    },
+    validate_admin_otp: async (req, res, next) => {
+      const { admin_id, otp } = req?.body;
+
+      //check if user_id - otp combo exists
+      const otp_exist = await UserModel.fetch_otp_by_user_id(admin_id);
+
+      if (!otp_exist) {
+        DefaultHelper.return_error(res, 404, "Access denied. Admin not found");
+        return;
+      }
+
+      //check if otp still valid
+      if (FormatDateTime.is_more_than_mins(otp_exist?.created_time, 15)) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "One-Time-Password is expired. Request a new one"
+        );
+        return;
+      }
+
+      //check if otp match
+      if (otp != otp_exist?.otp) {
+        DefaultHelper.return_error(
+          res,
+          401,
+          "Invalid One-Time-Password submitted"
+        );
+        return;
+      }
+
+      //update user is_verified
+      const is_verified = await AdminModel.update_admin_is_verified(admin_id);
+
+      req.body.admin.is_verified = true;
+      next();
+    },
   },
 };
