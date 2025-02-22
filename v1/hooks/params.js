@@ -248,10 +248,38 @@ export const ParamsGenerator = {
       let created_time = FormatDateTime.to_database_entry();
       let faq_id = IdGenerator.faq_id();
       question = String(question)?.toLowerCase();
-      answer = String(answer)?.toLowerCase();
+      answer = String(answer)?.trim();
       tags = String(tags)?.toLowerCase();
 
       return [created_time, faq_id, question, answer, tags];
+    },
+    update_faq: (form, faq_id) => {
+      let { question, answer, tags } = form;
+
+      question = String(question)?.toLowerCase();
+      answer = String(answer)?.trim();
+      tags = String(tags)?.toLowerCase();
+
+      return [question, answer, tags, faq_id];
+    },
+    create_contact_info: (form) => {
+      let { email, instagram, whatsapp } = form;
+
+      email = String(email)?.trim()?.toLowerCase();
+      instagram = String(instagram)?.trim()?.toLowerCase();
+      whatsapp = String(whatsapp)?.trim()?.toLowerCase();
+
+      return [email, instagram, whatsapp];
+    },
+    update_contact_info: (form, id) => {
+      let { email, instagram, whatsapp } = form;
+
+      id = Number(id);
+      email = String(email)?.trim()?.toLowerCase();
+      instagram = String(instagram)?.trim()?.toLowerCase();
+      whatsapp = String(whatsapp)?.trim()?.toLowerCase();
+
+      return [email, instagram, whatsapp, id];
     },
   },
   notification: {
@@ -327,11 +355,12 @@ export const ParamsGenerator = {
         is_verified,
       ];
     },
-    update_data: (fullname, phone, admin_id) => {
+    update_data: (email, fullname, phone, admin_id) => {
+      email = String(email);
       fullname = String(fullname);
       phone = String(phone);
 
-      return [fullname, phone, admin_id];
+      return [email, fullname, phone, admin_id];
     },
     update_passcode: (passcode, admin_id) => {
       passcode = `${passcode}`;

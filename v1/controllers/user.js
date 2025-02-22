@@ -133,4 +133,55 @@ export const UserController = {
     );
     return;
   },
+  admin: {
+    update_account: async (req, res) => {
+      const { admin } = req?.body;
+
+      if (!admin) {
+        DefaultHelper.return_error(
+          res,
+          400,
+          "Unable to update account details"
+        );
+        return;
+      }
+
+      //if admin stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin) };
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Account details updated successfully",
+        data
+      );
+      return;
+    },
+    update_pass: async (req, res) => {
+      const { admin, token } = req?.body;
+
+      if (!admin || !token) {
+        DefaultHelper.return_error(res, 400, "Unable to update admin token");
+        return;
+      }
+
+      //if token stored in request body, return data
+      let data = { admin: DefaultHelper.hide_admin_credentials(admin), token };
+
+      //emit event
+      UserEvent.emit("password-changed", {
+        data: { user: DefaultHelper.hide_admin_credentials(admin) },
+      });
+
+      //
+      DefaultHelper.return_success(
+        res,
+        200,
+        "Account password updated successfully",
+        data
+      );
+      return;
+    },
+  },
 };

@@ -65,9 +65,14 @@ export const AdminModel = {
     const attempt_to_update = await DB.update(sql, params);
     return attempt_to_update;
   },
-  update_admin_data: async (fullname, phone, admin_id) => {
-    const sql = `UPDATE ${db_tables.admins} SET fullname=?, phone=? WHERE admin_id=? LIMIT 1`;
-    const params = ParamsGenerator.admin.update_data(fullname, phone, admin_id);
+  update_admin_data: async (email, fullname, phone, admin_id) => {
+    const sql = `UPDATE ${db_tables.admins} SET email=?, fullname=?, phone=? WHERE admin_id=? LIMIT 1`;
+    const params = ParamsGenerator.admin.update_data(
+      email,
+      fullname,
+      phone,
+      admin_id
+    );
 
     //attempt to update db
     const attempt_to_update = await DB.update(sql, params);

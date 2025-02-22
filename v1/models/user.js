@@ -218,4 +218,15 @@ export const UserModel = {
       return 0;
     }
   },
+  fetch_all_verified_users: async () => {
+    const sql = `SELECT * FROM ${db_tables.users} WHERE is_verified = ${Boolean(
+      true
+    )}`;
+
+    const rows = await DB.read(sql);
+
+    const data = DefaultHelper.empty_or_rows(rows);
+
+    return data;
+  },
 };

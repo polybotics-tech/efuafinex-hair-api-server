@@ -17,12 +17,16 @@ export const FormValidator = {
   update_notify: validator(UserSchema.update_notify),
   create_package: validator(PackageSchema.create_package),
   make_deposit: validator(DepositSchema.make_deposit),
-  create_faqs: validator(FaqsSchema.create_faqs),
+
   admin: {
     login: validator(AuthSchema.admin.login),
     register: validator(AuthSchema.admin.register),
     reset_passcode: validator(AuthSchema.admin.reset_passcode),
     otp_verification: validator(AuthSchema.admin.otp_verification),
-    //update_pass: validator(UserSchema.update_pass),
+    update_account: validator(UserSchema.admin.update_account),
+    update_pass: validator(UserSchema.admin.update_pass),
+    create_faqs: validator(FaqsSchema.create_faqs),
+    create_contact_info: validator(FaqsSchema.create_contact_info),
+    send_bulk_mail: validator(FaqsSchema.send_bulk_mail),
   },
 };

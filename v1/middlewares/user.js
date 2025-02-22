@@ -272,5 +272,75 @@ export const UserMiddleware = {
       //done updating password
       next();
     },
+    validate_update_account_form: async (req, res, next) => {
+      let form = req?.body;
+
+      //validate request
+      const { error, value } = FormValidator.admin.update_account(form);
+
+      // return if error
+      if (error) {
+        DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+        return;
+      }
+
+      next();
+    },
+    validate_update_pass_form: async (req, res, next) => {
+      let form = req?.body;
+
+      //validate request
+      const { error, value } = FormValidator.admin.update_pass(form);
+
+      // return if error
+      if (error) {
+        DefaultHelper.return_error(res, 401, error?.details[0]?.message, form);
+        return;
+      }
+
+      next();
+    },
+    store_updated_admin_data: async (req, res, next) => {
+      const { email, fullname, phone, admin_id } = req?.body;
+      //
+      const account_updated = AdminModel.update_admin_data(
+        email,
+        fullname,
+        phone,
+        admin_id
+      );
+
+      if (!account_updated) {
+        DefaultHelper.return_error(res, 400, "Error updating account details");
+        return;
+      }
+
+      //fetch updated admin
+      const updatedAdmin = await AdminModel.fetch_admin_by_admin_id(admin_id);
+
+      req.body.admin = updatedAdmin;
+      //done updating account
+      next();
+    },
+    store_new_admin_passcode: async (req, res, next) => {
+      const { new_passcode, admin_id } = req?.body;
+      //
+      const pass_updated = AdminModel.update_admin_passcode(
+        new_passcode,
+        admin_id
+      );
+
+      if (!pass_updated) {
+        DefaultHelper.return_error(
+          res,
+          400,
+          "Error updating account passwcode"
+        );
+        return;
+      }
+
+      //done updating password
+      next();
+    },
   },
 };

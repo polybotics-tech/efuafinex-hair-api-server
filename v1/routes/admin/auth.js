@@ -2,6 +2,7 @@ import e from "express";
 import { AuthController } from "../../controllers/auth.js";
 import { AuthMiddleWare } from "../../middlewares/auth.js";
 import { UserMiddleware } from "../../middlewares/user.js";
+import { UserController } from "../../controllers/user.js";
 
 export const authRouter = e.Router();
 
@@ -72,4 +73,25 @@ authRouter.post(
   AuthMiddleWare.admin.validate_admin_otp,
   AuthMiddleWare.admin.generate_and_update_token,
   AuthController.admin.verify_otp
+);
+
+//update user account
+authRouter.put(
+  "/account",
+  UserMiddleware.admin.validate_update_account_form,
+  AuthMiddleWare.admin.validate_token_authorization,
+  UserMiddleware.admin.store_updated_admin_data,
+  UserController.admin.update_account
+);
+
+//update user password
+authRouter.put(
+  "/pass",
+  UserMiddleware.admin.validate_update_pass_form,
+  AuthMiddleWare.admin.validate_token_authorization,
+  AuthMiddleWare.admin.compare_passcode_match,
+  UserMiddleware.admin.hash_new_passcode,
+  UserMiddleware.admin.store_new_admin_passcode,
+  AuthMiddleWare.admin.generate_and_update_token,
+  UserController.admin.update_pass
 );

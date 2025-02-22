@@ -2,19 +2,20 @@ import Mailgen from "mailgen";
 import nodemailer from "nodemailer";
 import { config } from "../../config.js";
 import { DefaultHelper } from "../utils/helpers.js";
+import { logbot } from "../../logger.js";
 
 // Configure mailgen by setting a theme and your product info
 var mailGenerator = new Mailgen({
   theme: "default",
   product: {
     // meta data that appears in header & footer of e-mails
-    name: "EFUAFINEX HAIR",
+    name: config?.email?.title,
     link: "https://polybotics.tech/",
     // custom copyright message
     copyright: `Copyright © ${new Date().getFullYear()} EFUAFINEX. All rights reserved.`,
     // optional brand logo
     logo: "https://test.polybotics.tech/uploads/icon.png",
-    logoHeight: "30px",
+    logoHeight: "64px",
   },
 });
 
@@ -143,6 +144,15 @@ export const MailGenerator = {
       outro,
     },
   }),
+  bulk_mail_to_users: (body) => ({
+    body: {
+      name: "Beloved",
+      greeting,
+      signature,
+      intro: [`${body}`],
+      outro,
+    },
+  }),
 };
 /////
 
@@ -159,9 +169,7 @@ export const MailSender = {
     await transporter.sendMail(options, function (error, info) {
       if (error) {
         transporter.sendMail(options);
-        console.log("err: ", error);
-      } else {
-        console.log("mail sent: ", info);
+        logbot.Error(`Error sending mail - ${error}`);
       }
     });
   },
@@ -177,9 +185,7 @@ export const MailSender = {
     await transporter.sendMail(options, function (error, info) {
       if (error) {
         transporter.sendMail(options);
-        console.log("err: ", error);
-      } else {
-        console.log("mail sent: ", info);
+        logbot.Error(`Error sending mail - ${error}`);
       }
     });
   },
@@ -195,9 +201,7 @@ export const MailSender = {
     await transporter.sendMail(options, function (error, info) {
       if (error) {
         transporter.sendMail(options);
-        console.log("err: ", error);
-      } else {
-        console.log("mail sent: ", info);
+        logbot.Error(`Error sending mail - ${error}`);
       }
     });
   },
@@ -213,9 +217,7 @@ export const MailSender = {
     await transporter.sendMail(options, function (error, info) {
       if (error) {
         transporter.sendMail(options);
-        console.log("err: ", error);
-      } else {
-        console.log("mail sent: ", info);
+        logbot.Error(`Error sending mail - ${error}`);
       }
     });
   },
@@ -243,9 +245,21 @@ export const MailSender = {
     await transporter.sendMail(options, function (error, info) {
       if (error) {
         transporter.sendMail(options);
-        console.log("err: ", error);
-      } else {
-        console.log("mail sent: ", info);
+        logbot.Error(`Error sending mail - ${error}`);
+      }
+    });
+  },
+  bulk_mail_to_users: async (recipients, subject, body) => {
+    const options = await MailOptions(
+      recipients,
+      `${subject}`,
+      MailGenerator.bulk_mail_to_users(body)
+    );
+
+    await transporter.sendMail(options, function (error, info) {
+      if (error) {
+        transporter.sendMail(options);
+        logbot.Error(`Error sending mail - ${error}`);
       }
     });
   },

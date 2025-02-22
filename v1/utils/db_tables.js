@@ -9,5 +9,6 @@ export const db_tables = {
   packages: `${prefix}packages`,
   deposits: `${prefix}deposits`,
   faqs: `${prefix}faqs`,
+  contact_info: `${prefix}contact_info`,
   notifications: `${prefix}notifications`,
 };

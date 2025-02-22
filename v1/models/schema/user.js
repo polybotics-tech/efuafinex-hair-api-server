@@ -47,4 +47,52 @@ export const UserSchema = {
       "any.required": "Boolean value required for 'email_notify'",
     }),
   }),
+  admin: {
+    update_account: Joi.object({
+      email: Joi.string().email().required().messages({
+        "any.required": "Please provide a valid email address",
+        "string.empty": "Please provide a valid email address",
+        "string.email": "Please provide a valid email address",
+      }),
+      fullname: Joi.string().min(3).required().messages({
+        "any.required": "Please provide a legal full name",
+        "string.empty": "Please provide a legal full name",
+        "string.min": "Please provide a legal full name",
+      }),
+      phone: Joi.number().required().messages({
+        "any.required": "Please provide a valid phone number",
+        "number.empty": "Please provide a valid phone number",
+      }),
+    }),
+    update_pass: Joi.object({
+      passcode: Joi.string().required().messages({
+        "any.required": "Please provide your account's current passcode",
+        "string.empty": "Please provide your account's current passcode",
+      }),
+      new_passcode: Joi.string()
+        .regex(
+          /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!#.])[A-Za-z\d$@$!%*?&.]{8,20}/
+        )
+        .min(6)
+        .max(15)
+        .required()
+        .messages({
+          "any.required": "Please provide a new passcode",
+          "string.empty": "Please provide a new passcode",
+          "string.min":
+            "New passcode is too short, must be atleast 6 characters long",
+          "string.max":
+            "New passcode is too long, must be atmost 15 characters long",
+          "string.pattern.base":
+            "New passcode must contain atleast: 1 number, 1 uppercase and 1 lowercase letters, and any of these special characters - @$!",
+        }),
+      confirm_passcode: Joi.string()
+        .valid(Joi.ref("new_passcode"))
+        .required()
+        .messages({
+          "any.required": "Confirm passcode must match new passcode",
+          "any.only": "Confirm passcode must match new passcode",
+        }),
+    }),
+  },
 };

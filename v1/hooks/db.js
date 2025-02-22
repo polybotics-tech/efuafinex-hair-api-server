@@ -28,6 +28,7 @@ export const DB = {
     } catch (error) {
       //
       throw_db_conn_err(error, sql);
+      return false;
     }
   },
 
@@ -43,6 +44,7 @@ export const DB = {
     } catch (error) {
       //
       throw_db_conn_err(error, sql);
+      return false;
     }
   },
 
@@ -54,6 +56,7 @@ export const DB = {
     } catch (error) {
       //
       throw_db_conn_err(error, sql);
+      return false;
     }
   },
 
@@ -63,9 +66,9 @@ export const DB = {
 
       return result.affectedRows ? true : false;
     } catch (error) {
-      return false;
       //
       throw_db_conn_err(error, sql);
+      return false;
     }
   },
 };
