@@ -37,4 +37,34 @@ export const NotificationMiddleware = {
       return;
     }
   },
+  fetch_admin_notifications: async (req, res, next) => {
+    try {
+      const { page } = req?.body;
+
+      //fetch notifications by user_id
+      const notifications = await NotificationModel.fetch_notifications(page);
+
+      //meta data
+      const tup = await NotificationModel.count_all_notifications();
+      const meta = {
+        page,
+        total_results: parseInt(tup),
+        has_next_page: DefaultHelper.check_has_prev_next_page(page, tup, true),
+        has_prev_page: DefaultHelper.check_has_prev_next_page(page, tup, false),
+      };
+
+      //append to body request
+      req.body.notifications = notifications;
+      req.body.meta = meta;
+
+      next();
+    } catch (error) {
+      DefaultHelper.return_error(
+        res,
+        500,
+        error?.message || "Internal server error occured"
+      );
+      return;
+    }
+  },
 };

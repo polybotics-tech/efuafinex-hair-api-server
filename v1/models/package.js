@@ -37,7 +37,7 @@ export const PackageModel = {
 
     return data.length > 0 ? data[0] : false;
   },
-  fetch_user_packages: async (user_id, page = 1, sort = "all") => {
+  fetch_user_packages: async (user_id, page = 1, sort = "all", q = "") => {
     const offset = DefaultHelper.get_offset(page);
 
     //filter query by sort parameter passed by user
@@ -54,7 +54,9 @@ export const PackageModel = {
       filter = `status = '${sort}' && `;
     }
 
-    const sql = `SELECT * FROM ${db_tables.packages} WHERE ${filter}user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    let query = `(package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%') `;
+
+    const sql = `SELECT * FROM ${db_tables.packages} WHERE ${filter}${query}&& user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);
@@ -63,7 +65,7 @@ export const PackageModel = {
 
     return data;
   },
-  count_all_user_packages: async (user_id, sort = "all") => {
+  count_all_user_packages: async (user_id, sort = "all", q = "") => {
     //filter query by sort parameter passed by user
     sort = String(sort)?.trim()?.toLowerCase();
     let filter = "";
@@ -78,7 +80,9 @@ export const PackageModel = {
       filter = `status = '${sort}' && `;
     }
 
-    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE ${filter}user_id = ?`;
+    let query = `(package_id LIKE '%${q}%' || title LIKE '%${q}%' || description LIKE '%${q}%') `;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.packages} WHERE ${filter}${query}&& user_id = ?`;
     const params = [user_id];
 
     const res = await DB.read(sql, params);

@@ -89,14 +89,19 @@ export const PackageMiddleware = {
   },
   fetch_user_packages: async (req, res, next) => {
     try {
-      const { user, page } = req?.body;
+      const { user, page, sort, q } = req?.body;
       const { user_id } = user;
 
       //fetch packages by user_id
-      const packages = await PackageModel.fetch_user_packages(user_id, page);
+      const packages = await PackageModel.fetch_user_packages(
+        user_id,
+        page,
+        sort,
+        q
+      );
 
       //meta data
-      const tup = await PackageModel.count_all_user_packages(user_id);
+      const tup = await PackageModel.count_all_user_packages(user_id, sort, q);
       const meta = {
         user_id,
         page,

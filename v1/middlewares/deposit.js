@@ -164,18 +164,19 @@ export const DepositMiddleware = {
   },
   fetch_user_deposits: async (req, res, next) => {
     try {
-      const { user, page, sort } = req?.body;
+      const { user, page, sort, q } = req?.body;
       const { user_id } = user;
 
       //fetch deposits by user_id
       const deposits = await DepositModel.fetch_user_deposits(
         user_id,
         page,
-        sort
+        sort,
+        q
       );
 
       //meta data
-      const tup = await DepositModel.count_all_user_deposits(user_id, sort);
+      const tup = await DepositModel.count_all_user_deposits(user_id, sort, q);
       const meta = {
         user_id,
         page,

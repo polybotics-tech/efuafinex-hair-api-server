@@ -85,7 +85,7 @@ export const DepositModel = {
 
     return data;
   },
-  fetch_user_deposits: async (user_id, page = 1, sort = "all") => {
+  fetch_user_deposits: async (user_id, page = 1, sort = "all", q = "") => {
     const offset = DefaultHelper.get_offset(page);
 
     //filter query by sort parameter passed by user
@@ -96,7 +96,9 @@ export const DepositModel = {
       filter = `status = '${sort}' && `;
     }
 
-    const sql = `SELECT * FROM ${db_tables.deposits} WHERE ${filter}user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
+    let query = `(deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%') `;
+
+    const sql = `SELECT * FROM ${db_tables.deposits} WHERE ${filter}${query}&& user_id = ? ORDER BY id DESC LIMIT ${offset}, ${config.pageLimit}`;
     const params = [user_id];
 
     const rows = await DB.read(sql, params);
@@ -111,7 +113,7 @@ export const DepositModel = {
 
     return data;
   },
-  count_all_user_deposits: async (user_id, sort = "all") => {
+  count_all_user_deposits: async (user_id, sort = "all", q = "") => {
     //filter query by sort parameter passed by user
     sort = String(sort)?.trim()?.toLowerCase();
     let filter = "";
@@ -120,7 +122,9 @@ export const DepositModel = {
       filter = `status = '${sort}' && `;
     }
 
-    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE ${filter}user_id = ?`;
+    let query = `(deposit_id LIKE '%${q}%' || transaction_ref LIKE '%${q}%' || package_id LIKE '%${q}%') `;
+
+    const sql = `SELECT COUNT(*) FROM ${db_tables.deposits} WHERE ${filter}${query}&& user_id = ?`;
     const params = [user_id];
 
     const res = await DB.read(sql, params);
