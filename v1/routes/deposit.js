@@ -33,9 +33,6 @@ depositRouter.get(
   DepositController.handle_success_page
 );
 
-//webhook to recieve deposits from paystack
-depositRouter.post("/paystack/webhook", DepositController.handle_webhook);
-
 //verify transaction reference
 depositRouter.get(
   "/verify/:transaction_ref",

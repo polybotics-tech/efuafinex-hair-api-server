@@ -2,6 +2,7 @@ import { AuthSchema } from "../models/schema/auth.js";
 import { DepositSchema } from "../models/schema/deposit.js";
 import { FaqsSchema } from "../models/schema/faqs.js";
 import { PackageSchema } from "../models/schema/package.js";
+import { TransferSchema } from "../models/schema/transfer.js";
 import { UserSchema } from "../models/schema/user.js";
 
 const validator = (schema) => (payload) => schema.validate(payload);
@@ -28,5 +29,8 @@ export const FormValidator = {
     create_faqs: validator(FaqsSchema.create_faqs),
     create_contact_info: validator(FaqsSchema.create_contact_info),
     send_bulk_mail: validator(FaqsSchema.send_bulk_mail),
+    verify_transfer_account: validator(TransferSchema.verify_transfer_account),
+    request_transfer: validator(TransferSchema.request_transfer),
+    finalize_transfer: validator(TransferSchema.finalize_transfer),
   },
 };

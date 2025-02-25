@@ -1,4 +1,5 @@
 import { PackageModel } from "../models/package.js";
+import { TransferModel } from "../models/transfer.js";
 import { UserModel } from "../models/user.js";
 import { PackageEvent } from "../subscribers/package.js";
 import { DefaultHelper } from "../utils/helpers.js";
@@ -37,8 +38,13 @@ export const PackageController = {
     //fetch package user details for reference
     const user = await UserModel.fetch_user_by_user_id(target_package?.user_id);
 
+    //check if package has transfer request
+    const transfer_record = await TransferModel.fetch_transfer_by_package_id(
+      target_package?.package_id
+    );
+
     //if meta and packages stored in request body, return data
-    let data = { ...target_package, user };
+    let data = { ...target_package, user, transfer_record };
 
     //
     DefaultHelper.return_success(

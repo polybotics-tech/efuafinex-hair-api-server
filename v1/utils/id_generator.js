@@ -93,6 +93,10 @@ export const IdGenerator = {
     const dt = new Date();
     return `DEPOSIT-${random_num(10, 99)}${random_aph(2)}${dt.getTime()}`;
   },
+  transfer_id: () => {
+    const dt = new Date();
+    return `TRASNFER-${random_num(10, 99)}${random_aph(2)}${dt.getTime()}`;
+  },
   photo_upload_name: () => {
     const ext = "jpeg";
     const dt = new Date();

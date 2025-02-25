@@ -1,5 +1,6 @@
 import { API_REQUESTS } from "../hooks/api/requests.js";
 import { DepositModel } from "../models/deposit.js";
+import { TransferModel } from "../models/transfer.js";
 import { DepositEvent } from "../subscribers/deposit.js";
 import { DefaultHelper } from "../utils/helpers.js";
 import { FormValidator } from "./validator.js";
@@ -302,7 +303,11 @@ export const DepositMiddleware = {
       //fetch deposits by q which is year
       const total_deposits = await DepositModel.sum_deposits_by_year(q);
 
+      //fetch transfers by q which is year
+      const total_transfers = await TransferModel.sum_transfers_by_year(q);
+
       req.body.total_deposits = total_deposits;
+      req.body.total_cashouts = total_transfers;
       next();
     } catch (error) {
       DefaultHelper.return_error(

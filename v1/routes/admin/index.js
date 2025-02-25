@@ -4,6 +4,7 @@ import { usersRouter } from "./users.js";
 import { packagesRouter } from "./packages.js";
 import { depositsRouter } from "./deposits.js";
 import { authRouter } from "./auth.js";
+import { transfersRouter } from "./transfers.js";
 
 export const adminRouter = e.Router();
 
@@ -25,3 +26,6 @@ adminRouter.use("/packages", packagesRouter);
 
 //deposits routes
 adminRouter.use("/deposits", depositsRouter);
+
+//transfers routes
+adminRouter.use("/transfers", transfersRouter);

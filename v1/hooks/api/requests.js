@@ -107,6 +107,176 @@ export const API_REQUESTS = {
         return false;
       }
     },
+    verify_transfer_account: async (account_number, bank_code) => {
+      try {
+        //send request
+        const response = await axios.get(
+          PasystackEndpoints.bank.resolve(account_number, bank_code),
+          auth_header
+        );
+
+        let result = response.data;
+        const { status, data } = result;
+
+        if (!status) {
+          return false;
+        }
+
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
+    verify_transfer: async (reference) => {
+      try {
+        //send request
+        const response = await axios.get(
+          PasystackEndpoints.transfer.verify(reference),
+          auth_header
+        );
+
+        let result = response.data;
+        const { status, data } = result;
+
+        if (!status) {
+          return false;
+        }
+
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
+    create_transfer_recipient: async (account_number, bank_code, name) => {
+      try {
+        const options = {
+          type: "nuban",
+          currency: "NGN",
+          name,
+          account_number,
+          bank_code,
+        };
+
+        //send request
+        const response = await axios.post(
+          PasystackEndpoints.transfer.recipient,
+          options,
+          auth_header
+        );
+
+        let result = response.data;
+        const { status, data } = result;
+
+        if (!status) {
+          return false;
+        }
+
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
+    fetch_paystack_balance: async () => {
+      try {
+        //send request
+        const response = await axios.get(
+          PasystackEndpoints.balance.check,
+          auth_header
+        );
+
+        let result = response.data;
+        const { status, data } = result;
+
+        if (!status) {
+          return false;
+        }
+
+        return data[0];
+      } catch (error) {
+        return false;
+      }
+    },
+    resend_transfer_otp: async (transfer_code) => {
+      try {
+        const options = {
+          transfer_code,
+          reason: "transfer",
+        };
+
+        //send request
+        const response = await axios.post(
+          PasystackEndpoints.transfer.resend_otp,
+          options,
+          auth_header
+        );
+
+        let result = response.data;
+        const { status } = result;
+
+        if (!status) {
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    initiate_transfer: async (amount, reference, recipient_code, reason) => {
+      try {
+        const options = {
+          source: "balance",
+          currency: "NGN",
+          reason,
+          amount: Number(amount * 100),
+          recipient: recipient_code,
+          reference,
+        };
+
+        //send request
+        const response = await axios.post(
+          PasystackEndpoints.transfer.initiate,
+          options,
+          auth_header
+        );
+
+        let result = response.data;
+        const { status, data } = result;
+
+        if (!status) {
+          return false;
+        }
+
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
+    finalize_transfer: async (transfer_code, otp) => {
+      try {
+        const options = {
+          transfer_code,
+          otp,
+        };
+
+        //send request
+        const response = await axios.post(
+          PasystackEndpoints.transfer.finalize,
+          options,
+          auth_header
+        );
+
+        let result = response.data;
+        const { status, data } = result;
+        if (!status) {
+          return false;
+        }
+
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
   },
   RemoteImage: {
     fetch_array_buffer: async (image_url) => {

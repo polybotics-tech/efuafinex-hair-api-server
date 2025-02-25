@@ -4,6 +4,7 @@ import { packageRouter } from "./routes/package.js";
 import { userRouter } from "./routes/user.js";
 import { depositRouter } from "./routes/deposit.js";
 import { adminRouter } from "./routes/admin/index.js";
+import { webhookRouter } from "./routes/webhook.js";
 
 export const v1 = e.Router();
 
@@ -27,3 +28,6 @@ v1.use("/deposit", depositRouter);
 
 //admin route
 v1.use("/admin", adminRouter);
+
+//webhook route
+v1.use("/webhook", webhookRouter);

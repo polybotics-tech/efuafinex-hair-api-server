@@ -1,4 +1,6 @@
 import { AuthEvent } from "../subscribers/auth.js";
+import { DepositEvent } from "../subscribers/deposit.js";
+import { TransferEvent } from "../subscribers/transfer.js";
 import { UserEvent } from "../subscribers/user.js";
 import { DefaultHelper } from "../utils/helpers.js";
 
@@ -196,6 +198,10 @@ export const AuthController = {
 
       //if token stored in request body, return data
       let data = { admin: DefaultHelper.hide_admin_credentials(admin) };
+
+      //call event to update any pending transfer on records
+      TransferEvent.emit("update-pending-transfers");
+      DepositEvent.emit("update-pending-deposits");
 
       //
       DefaultHelper.return_success(res, 200, "Admin token validated", data);

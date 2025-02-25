@@ -69,6 +69,7 @@ export const PackageMiddleware = {
     }
 
     //append to body request
+    req.body.package_id = package_id;
     req.body.target_package = target_package;
 
     next();

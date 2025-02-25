@@ -374,4 +374,62 @@ export const ParamsGenerator = {
       return [is_verified, admin_id];
     },
   },
+  transfer: {
+    create_new_transfer_record: (form) => {
+      let {
+        admin_id,
+        package_id,
+        transaction_ref,
+        amount,
+        recipient_code,
+        fee_charged,
+        reason,
+        extra,
+      } = form;
+
+      let created_time = FormatDateTime.to_database_entry();
+      let transfer_id = IdGenerator.transfer_id();
+      let transfer_code = "";
+      amount = Number(amount);
+      fee_charged = Number(fee_charged);
+      let status = "pending";
+      let last_updated = FormatDateTime.to_database_entry();
+      reason = String(reason)?.trim();
+      extra = JSON.stringify(extra);
+
+      return [
+        created_time,
+        transfer_id,
+        transaction_ref,
+        transfer_code,
+        package_id,
+        admin_id,
+        amount,
+        fee_charged,
+        status,
+        last_updated,
+        reason,
+        recipient_code,
+        extra,
+      ];
+    },
+    update_transfer_code: (transfer_code, transaction_ref) => {
+      let last_updated = FormatDateTime.to_database_entry();
+
+      return [last_updated, transfer_code, transaction_ref];
+    },
+    update_status: (status, transaction_ref) => {
+      let last_updated = FormatDateTime.to_database_entry();
+      status =
+        String(status)?.toLowerCase() === "failed" ||
+        String(status)?.toLowerCase() === "abandoned" ||
+        String(status)?.toLowerCase() === "rejected" ||
+        String(status)?.toLowerCase() === "received" ||
+        String(status)?.toLowerCase() === "blocked"
+          ? "failed"
+          : String(status)?.toLowerCase();
+
+      return [last_updated, status, transaction_ref];
+    },
+  },
 };

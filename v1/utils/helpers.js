@@ -102,6 +102,31 @@ export const DefaultHelper = {
     let final = fee < 3000 ? fee : 3000;
     return final;
   },
+  calculate_transfer_fee_charge_from_amount: (amount) => {
+    let wave = Boolean(Number(amount) <= 5000); //whether to wave extra charge
+    let fee; //in naira
+
+    if (wave) {
+      fee = parseInt(20);
+    } else {
+      if (amount > 5000 && amount <= 50000) {
+        fee = parseInt(30);
+      } else {
+        fee = parseInt(50);
+      }
+    }
+
+    return fee;
+  },
+  check_balance_can_cover_amount: (balance, amount, fee) => {
+    let total_expense = Number(amount) + Number(fee);
+
+    if (Number(balance) <= total_expense) {
+      return false;
+    }
+
+    return true;
+  },
   format_size_to_readable: (size) => {
     const size_ext = ["B", "KB", "MB", "GB"];
     const size_divisor = {

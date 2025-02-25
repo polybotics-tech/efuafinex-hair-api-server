@@ -16,14 +16,6 @@ usersRouter.get(
   UserController.fetch_multiple_users
 );
 
-//fetch single user details
-usersRouter.get(
-  "/:user_id",
-  AuthMiddleWare.admin.validate_token_authorization,
-  UserMiddleware.validate_user_id_params,
-  UserController.fetch_single_user
-);
-
 //fetch user notifications
 usersRouter.get(
   "/notifications",
@@ -31,4 +23,12 @@ usersRouter.get(
   AuthMiddleWare.integrate_pagination_query,
   NotificationMiddleware.fetch_admin_notifications,
   NotificationController.fetch_notifications
+);
+
+//fetch single user details
+usersRouter.get(
+  "/:user_id",
+  AuthMiddleWare.admin.validate_token_authorization,
+  UserMiddleware.validate_user_id_params,
+  UserController.fetch_single_user
 );

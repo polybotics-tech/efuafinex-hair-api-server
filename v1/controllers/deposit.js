@@ -1,8 +1,6 @@
-import crypto from "crypto";
-import { config } from "../../config.js";
 import { DepositEvent } from "../subscribers/deposit.js";
+import { TransferEvent } from "../subscribers/transfer.js";
 import { DefaultHelper } from "../utils/helpers.js";
-import { DepositModel } from "../models/deposit.js";
 
 export const DepositController = {
   make_deposit: async (req, res) => {
@@ -36,36 +34,6 @@ export const DepositController = {
       data
     );
     return;
-  },
-  handle_webhook: async (req, res) => {
-    const hash = crypto
-      .createHmac("sha512", config.paystack.secretKey)
-      .update(JSON.stringify(req.body))
-      .digest("hex");
-
-    if (hash === req.headers["x-paystack-signature"]) {
-      // retrieve the request's body
-      const event = req.body;
-
-      console.log("event: ", event);
-      if (event.event === "charge.success") {
-        console.log("Payment Successful:", event.data);
-        // update your database here
-        const reference = event.data?.reference;
-
-        //fetch deposit record
-        const deposit_record =
-          await DepositModel.fetch_deposit_by_transaction_ref(reference);
-
-        if (deposit_record?.transaction_ref === reference) {
-          let data = { reference, deposit_record };
-
-          DepositEvent.emit("deposit-made", { data });
-        }
-      }
-
-      res.sendStatus(200);
-    }
   },
   handle_success_page: async (req, res) => {
     const { reference, deposit_record } = req?.body;
@@ -118,7 +86,7 @@ export const DepositController = {
     let data = { deposits, meta };
 
     //emit event
-    DepositEvent.emit("deposits-fetched");
+    DepositEvent.emit("update-pending-deposits");
 
     //
     DefaultHelper.return_success(
@@ -130,21 +98,21 @@ export const DepositController = {
     return;
   },
   fetch_total_transactions: async (req, res) => {
-    const { total_deposits } = req?.body;
-
-    if (!total_deposits && total_deposits != 0) {
-      DefaultHelper.return_error(res, 400, "Unable to fetch total deposits");
-      return;
-    }
+    const { total_deposits, total_cashouts } = req?.body;
 
     //if total_deposits stored in request body, return data
-    let data = { total_deposits };
+    let data = { total_deposits, total_cashouts };
+
+    //emit event
+    DepositEvent.emit("update-pending-deposits");
+    //call event to update any pending transfer on records
+    TransferEvent.emit("update-pending-transfers");
 
     //
     DefaultHelper.return_success(
       res,
       200,
-      "Total deposits fetched successfully",
+      "Total transactions fetched successfully",
       data
     );
     return;
